@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Prototipo depredación ecosistema</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="style.css">
+	</head>
+	<body>
+		<section id="players-panel">
+			<section id="primary-consumers-list" class="player-list">
+				<section id="c1-list-header" class="list-header">
+					<img src="leafsprite.png" alt="Leaf sprite"/>
+					<h2>C1</h2>
+				</section>
+				<ul id="c1-list-items" class="list-items">
+				</ul>
+				<section id="c1-list-mod-ctrls" class="list-mod-ctrls">
+					<input type="text" class="player-name-input"/>
+					<button class="player-add-btn">+</button>
+				</section>
+			</section>
+			<section id="secondary-consumers-list" class="player-list">
+				<section id="c2-list-header" class="list-header">
+					<img src="beefsprite.png" alt="Leaf sprite"/>
+					<h2>C2</h2>
+				</section>
+				<ul id="c2-list-items" class="list-items">
+				</ul>
+				<section id="c2-list-mod-ctrls" class="list-mod-ctrls">
+					<input type="text"/>
+					<button class="player-add-btn">+</button>
+				</section>
+			</section>
+			<section id="control-buttons">
+				<button id="start-turn" class="ctrl-btn">Iniciar Turno</button>
+				<button id="erase-c1" class="ctrl-btn" >Borrar jugadores en C1</button>
+				<button id="erase-c2" class="ctrl-btn">Borrar jugadores en C2</button>
+				<button id="erase-all" class="ctrl-btn">Borrar todo</button>
+			</section>
+		</section>
+		<section id="dice-roll">
+			<section id="dices">
+				<img id="left-dice" src="dice1.png" alt="Left dice" width="300px"/>
+				<img id="right-dice" src="dice1.png" alt="Right dice" width="300px"/>
+			</section>
+			<button id="bonus-btn" class="ctrl-btn">+6</button>
+			<button id="finsih-roll-btn" class="ctrl-btn">Terminar tirada</button>
+		</section>
+		<script src="script.js"></script>
+	</body>
+</html>
