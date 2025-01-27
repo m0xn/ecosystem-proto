@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<title>Prototipo depredación ecosistema</title>
+		<meta charset="UTF-8">
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
@@ -14,8 +15,7 @@
 					<img src="leafsprite.png" alt="Leaf sprite"/>
 					<h2>C1</h2>
 				</section>
-				<ul id="c1-list-items" class="list-items">
-				</ul>
+				<ul id="c1-list-items" class="list-items"></ul>
 				<section id="c1-list-mod-ctrls" class="list-mod-ctrls">
 					<input type="text" class="player-name-input"/>
 					<button class="player-add-btn">+</button>
@@ -26,15 +26,14 @@
 					<img src="beefsprite.png" alt="Leaf sprite"/>
 					<h2>C2</h2>
 				</section>
-				<ul id="c2-list-items" class="list-items">
-				</ul>
+				<ul id="c2-list-items" class="list-items"></ul>
 				<section id="c2-list-mod-ctrls" class="list-mod-ctrls">
 					<input type="text"/>
 					<button class="player-add-btn">+</button>
 				</section>
 			</section>
+			<button id="start-turn" class="ctrl-btn">Iniciar Turno</button>
 			<section id="control-buttons">
-				<button id="start-turn" class="ctrl-btn">Iniciar Turno</button>
 				<button id="erase-c1" class="ctrl-btn" >Borrar jugadores en C1</button>
 				<button id="erase-c2" class="ctrl-btn">Borrar jugadores en C2</button>
 				<button id="erase-all" class="ctrl-btn">Borrar todo</button>

@@ -46,11 +46,12 @@ section#players-panel {
 	justify-content: center;
 
 	height: 98vh;
-	width: 30vw;
+	width: 33vw;
 }
 
 section#primary-consumers-list {
 	background: var(--c1-player-panel-bg);
+	border-radius: 0.5em 0.5em 0 0;
 }
 
 section#secondary-consumers-list {
@@ -68,6 +69,7 @@ section.list-header {
 
 section#c1-list-header {
 	background: var(--c1-player-panel-header-bg);
+	border-radius: 0.5em 0.5em 0 0;
 }
 
 section#c2-list-header {
@@ -75,14 +77,14 @@ section#c2-list-header {
 }
 
 section.list-header>h2 {
-	font-size: 4vh;
+	font-size: 2em;
 
-	padding: 10px;
+	padding: 0.25em;
 	margin: 0;
 }
 
 section.list-header>img {
-	width: 3.5vh;
+	width: 2em;
 }
 
 ul.list-items {
@@ -101,9 +103,9 @@ ul.list-items>li {
 	align-items: center;
 
 	font-weight: 500;
-	font-size: 2.25vh;
+	font-size: 1.35em;
 
-	padding: 5px;
+	padding: 0.25em;
 }
 
 ul#c1-list-items>li {
@@ -140,6 +142,11 @@ section#c1-list-mod-ctrls {
 
 section#c2-list-mod-ctrls {
 	background: var(--c2-player-panel-header-bg);
+	border-radius: 0 0 0.5em 0.5em;
+}
+
+section#secondary-consumers-list {
+	border-radius: 0 0 0.5em 0.5em;
 }
 
 section.list-mod-ctrls>input {
@@ -226,7 +233,7 @@ button.ctrl-btn {
 	font-optical-sizing: auto;
 	font-weight: 500;
 	font-style: normal;
-	font-size: 2.25vh;
+	font-size: 1.35em;
 
 	background: var(--control-btn-bg);
 	color: var(--control-btn-fg);
@@ -244,6 +251,11 @@ button.ctrl-btn:hover {
 
 button.ctrl-btn:active {
 	background: var(--control-btn-pressed);
+}
+
+button#start-turn {
+	font-size: 2em;
+	margin: 10px 5px 0 5px;
 }
 
 section#dice-roll {
