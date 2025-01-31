@@ -32,7 +32,7 @@
 					<button class="player-add-btn">+</button>
 				</section>
 			</section>
-			<button id="start-turn" class="ctrl-btn">Iniciar Turno</button>
+			<button id="start-turn" class="ctrl-btn">Iniciar Ciclo</button>
 			<section id="control-buttons">
 				<button id="erase-c1" class="ctrl-btn" >Borrar jugadores en C1</button>
 				<button id="erase-c2" class="ctrl-btn">Borrar jugadores en C2</button>
@@ -40,12 +40,19 @@
 			</section>
 		</section>
 		<section id="dice-roll">
-			<section id="dices">
-				<img id="left-dice" src="dice1.png" alt="Left dice" width="300px"/>
-				<img id="right-dice" src="dice1.png" alt="Right dice" width="300px"/>
-			</section>
-			<button id="bonus-btn" class="ctrl-btn">+6</button>
+			<section id="main-dice-ui">
+				<button class="ctrl-btn">Terminar turno</button>
+				<section id="dices">
+					<img id="left-dice" class="dice" src="dice1.png" alt="Left dice" width="300px"/>
+					<img id="right-dice" class="dice" src="dice1.png" alt="Right dice" width="300px"/>
+				</section>
 			<button id="finsih-roll-btn" class="ctrl-btn">Terminar tirada</button>
+			</section>
+			<section id="bonus-btns">
+				<button id="speed-amp-btn" class="ctrl-btn">Huida Rápida</button>
+				<button id="coop-btn" class="ctrl-btn">Cooperación</button>
+				<button id="speed-nerf-btn" class="ctrl-btn">Herida</button>
+			</section>
 		</section>
 		<script src="script.js"></script>
 	</body>
