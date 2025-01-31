@@ -1,123 +1,165 @@
-function handleLeftClick(listItem) {
-	const name = listItem.innerHTML.substring(0, listItem.innerHTML.indexOf("<"));
-	const parentId = listItem.parentNode.id;
+const playersUpdateEv = new Event("players-update");
 
-	if (parentId == "c1-list-items") {
-		if (c1SelectedPlayers.includes(name)) {
-			listItem.style.background = getComputedStyle(listItem).getPropertyValue("--c1-player-panel-entry-selected");
-			c1SelectedPlayers.push(name);
-		}
-		else {
-			listItem.style.background = getComputedStyle(listItem).getPropertyValue("--c1-player-panel-entry-bg")
-			c1SelectedPlayers = c1SelectedPlayers.filter(n => n != name);
-		}
-	}
-	else {
-		if (c2SelectedPlayers.includes(name)) {
-			listItem.style.background = getComputedStyle(listItem).getPropertyValue("--c2-player-panel-entry-selected");
-			c2SelectedPlayers.push(name);
-		}
-		else {
-			listItem.style.background = getComputedStyle(listItem).getPropertyValue("--c2-player-panel-entry-bg")
-			c2SelectedPlayers = c2SelectedPlayers.filter(n => n != name);
-		}
+const uiElements = {
+	"c1": {
+		listItems: document.querySelector("ul#c1-list-items"),
+		nameField: document.querySelector("section#c1-list-mod-ctrls>input"),
+		addPlayerBtn: document.querySelector("section#c1-list-mod-ctrls>button")
+	},
+	"c2": {
+		listItems: document.querySelector("ul#c2-list-items"),
+		nameField: document.querySelector("section#c2-list-mod-ctrls>input"),
+		addPlayerBtn: document.querySelector("section#c2-list-mod-ctrls>button")
 	}
 }
 
-function handleRightClick(listItem) {
-	const name = listItem.innerHTML.substring(0, listItem.innerHTML.indexOf("<"));
-	const parentId = listItem.parentNode.id;
+const removeC1PlayersBtn = document.querySelector("button#erase-c1");
+const removeC2PlayersBtn = document.querySelector("button#erase-c2");
+const removeAllPlayersBtn = document.querySelector("button#erase-all");
 
-	listItem.remove();
-
-	if (parentId == "c1-list-items") {
-		c1PlayerList = c1PlayerList.filter(player => player != name);
-		localStorage.setItem(parentId, JSON.stringify(c1PlayerList));
-	} else {
-		c2PlayerList = c2PlayerList.filter(player => player != name);
-		localStorage.setItem(parentId, JSON.stringify(c2PlayerList));
-	}
-}
-
-function createPlayer(name) {
-	const entry = document.createElement("li");
-	entry.className = "list-entry";
-	entry.innerHTML = name;
-
-	const speedPar = document.createElement("p");
-	speedPar.innerHTML = "0";
-
-	entry.appendChild(speedPar);
-	entry.addEventListener("click", () => { handleLeftClick(entry); })
-	entry.addEventListener("contextmenu", e => {
-		e.preventDefault();
-		handleRightClick(entry);
-	})
-	return entry;
-}
-
-function handleNewEntry(itemsList, playersList, inputField) {
-	if (inputField.value == "") {
-		window.alert("No has introducido ningún nombre dentro de la casilla");
+function handleUIPlayerAdd(group) {
+	const nameField = uiElements[group].nameField;
+	if (!nameField.value) {
+		window.alert("No has introducido ningún nombre");
 		return;
 	}
-	itemsList.appendChild(createPlayer(inputField.value));
-	playersList.push(inputField.value);
-	localStorage.setItem(itemsList.id, JSON.stringify(playersList));
-	inputField.value = "";
+
+	manager.addPlayer(nameField.value, group);
+	nameField.value = "";
 }
 
-function resetPlayers(itemsList, playerList, LSKey) {
-	while (itemsList.childNodes.length > 0) itemsList.removeChild(itemsList.firstChild);
-	while (playerList.length > 0) playerList.pop();
-	window.localStorage.removeItem(LSKey);
+function handleGroupRemoval(group, msg) {
+	if (!window.confirm(msg)) return;
+	if (group == "all") {
+		manager.players = [];
+		window.localStorage.removeItem("players");
+		while (uiElements.c1.listItems.childNodes.length > 0) uiElements.c1.listItems.removeChild(uiElements.c1.listItems.firstChild);
+		while (uiElements.c2.listItems.childNodes.length > 0) uiElements.c2.listItems.removeChild(uiElements.c2.listItems.firstChild);
+		return;
+	}
+
+	manager.players = manager.players.filter(pl => pl.group !== group);
+	window.localStorage.setItem("players", JSON.stringify(manager.players));
+	while (uiElements[group].listItems.childNodes.length > 0) uiElements[group].listItems.removeChild(uiElements[group].listItems.firstChild);
 }
 
-const c1List = document.querySelector("ul#c1-list-items");
-let c1PlayerList = JSON.parse(localStorage.getItem(c1List.id)) || [];
-const c1AddPlayerBtn = document.querySelector("section#c1-list-mod-ctrls>button");
-const c1NamePlayerField = document.querySelector("section#c1-list-mod-ctrls>input");
+const nameToId = name => name.toLowerCase().replaceAll(" ", "-");
 
-const c2List = document.querySelector("ul#c2-list-items");
-let c2PlayerList = JSON.parse(localStorage.getItem(c2List.id)) || [];
-const c2AddPlayerBtn = document.querySelector("section#c2-list-mod-ctrls>button");
-const c2NamePlayerField = document.querySelector("section#c2-list-mod-ctrls>input");
+class Player {
+	constructor(name, group) {
+		this.name = name;
+		this.group = group;
+		this.selected = false;
+		this.speed = 0;
+		this.speedBonus = 0;
+		this.cooperation = false;
+	}
+}
 
-const eraseC1ListBtn = document.querySelector("button#erase-c1");
-const eraseC2ListBtn = document.querySelector("button#erase-c2");
-const eraseAllBtn = document.querySelector("button#erase-all");
+class PlayersManager {
+	constructor() {
+		this.players = JSON.parse(window.localStorage.getItem("players")) || [];
+		this.lastSelected = null;
+		this.lastRemoved = null;
+		this.lastCreated = null;
+	}
 
-let c1SelectedPlayers = [];
-let c2SelectedPlayers = [];
+	addPlayer(name, group) {
+		if (this.players.some(pl => pl.name === name)) {
+			window.alert("No puedes añadir un nombre que ya está en la lista");
+			return;
+		}
 
-for (const player of c1PlayerList) c1List.appendChild(createPlayer(player));
-for (const player of c2PlayerList) c2List.appendChild(createPlayer(player));
+		const player = new Player(name, group);
+		this.lastCreated = player;
+		this.players.push(player);
+		window.localStorage.setItem("players", JSON.stringify(this.players));
+
+		document.dispatchEvent(playersUpdateEv);
+	}
+
+	createPlayerEntry(player) {
+		const entry = document.createElement("li");
+		entry.className = "list-entry";
+		entry.innerHTML = player.name;
+		entry.id = nameToId(player.name);
+
+		const speedText = document.createElement("p");
+		speedText.innerHTML = player.speed;
+		entry.appendChild(speedText);
+
+		entry.addEventListener("click", () => { this.handlePlayerSelection(player); });
+		entry.addEventListener("contextmenu", e => {
+			e.preventDefault();
+			this.handlePlayerDestruction(player);
+		});
+		return entry;
+	}
+
+	handlePlayerSelection(player) {
+		const prevSelected = this.players.find(pl => pl.selected);
+		if (prevSelected) {
+			prevSelected.selected = false;
+			document.querySelector(`li#${nameToId(prevSelected.name)}`).style = "";
+		}
+
+		player.selected = !player.selected;
+		this.lastSelected = player;
+		document.dispatchEvent(playersUpdateEv);
+	}
+
+	handlePlayerDestruction(player) {
+		if (!window.confirm("¿Estás seguro de que quieres borrar a este jugador?")) return;
+		this.players = this.players.filter(pl => pl !== player);
+		this.lastRemoved = player;
+		window.localStorage.setItem("players", JSON.stringify(this.players));
+		document.dispatchEvent(playersUpdateEv);
+	}
+
+	setupPlayers() {
+		this.players.forEach(pl => { pl.selected = false; });
+		for (const player of this.players)
+			uiElements[player.group].listItems.appendChild(this.createPlayerEntry(player));
+	}
+}
+
+const manager = new PlayersManager();
+manager.setupPlayers();
+
+document.addEventListener("players-update", () => {
+	if (manager.lastCreated) {
+		const player = manager.lastCreated;
+		const playerEntry = manager.createPlayerEntry(manager.lastCreated);
+
+		uiElements[player.group].listItems.appendChild(playerEntry);
+		manager.lastCreated = null;
+	}
+
+	if (manager.lastSelected) {
+		const bgColor = manager.lastSelected.selected
+			? getComputedStyle(document.body).getPropertyValue(`--${manager.lastSelected.group}-player-panel-entry-selected`)
+			: "";
+
+		const playerEntry = document.querySelector(`li#${nameToId(manager.lastSelected.name)}`);
+		playerEntry.style.background = bgColor;
+		manager.lastSelected = null;
+	}
+
+	if (manager.lastRemoved) {
+		document.querySelector(`li#${nameToId(manager.lastRemoved.name)}`).remove();
+		manager.lastRemoved = null;
+	}
+});
+
+uiElements.c1.addPlayerBtn.addEventListener("click", () => { handleUIPlayerAdd("c1"); });
+uiElements.c2.addPlayerBtn.addEventListener("click", () => { handleUIPlayerAdd("c2"); });
 
 window.addEventListener("keydown", e => {
 	if (e.key !== "Enter") return;
-	if (document.activeElement === c1NamePlayerField) handleNewEntry(c1List, c1PlayerList, c1NamePlayerField);
-	if (document.activeElement === c2NamePlayerField) handleNewEntry(c2List, c2PlayerList, c2NamePlayerField);
+	if (document.activeElement == uiElements.c1.nameField) handleUIPlayerAdd("c1");
+	if (document.activeElement == uiElements.c2.nameField) handleUIPlayerAdd("c2");
 });
 
-c1AddPlayerBtn.addEventListener("click", () => { handleNewEntry(c1List, c1PlayerList, c1NamePlayerField); })
-c2AddPlayerBtn.addEventListener("click", () => { handleNewEntry(c2List, c2PlayerList, c2NamePlayerField); })
-
-eraseC1ListBtn.addEventListener("click", () => {
-	if (!window.confirm("¿Seguro que quieres borrar los jugadores de C1?")) return;
-	localStorage.removeItem("c1-player-list");
-	resetPlayers(c1List, c1PlayerList, c1List.id);
-});
-
-eraseC2ListBtn.addEventListener("click", () => {
-	if (!window.confirm("¿Seguro que quieres borrar los jugadores de C2?")) return;
-	localStorage.removeItem("c2-player-list");
-	resetPlayers(c2List, c2PlayerList, c2List.id);
-});
-
-eraseAllBtn.addEventListener("click", () => {
-	if (!window.confirm("¿Seguro que quieres borrar todos los jugadores?")) return;
-	localStorage.removeItem("c1-player-list");
-	resetPlayers(c1List, c1PlayerList, c1List.id);
-	localStorage.removeItem("c2-player-list");
-	resetPlayers(c2List, c2PlayerList, c2List.id);
-});
+removeC1PlayersBtn.addEventListener("click", () => { handleGroupRemoval("c1", "¿Estás seguro de que quieres eliminar a los jugadores de C1?"); });
+removeC2PlayersBtn.addEventListener("click", () => { handleGroupRemoval("c2", "¿Estás seguro de que quieres eliminar a los jugadores de C2?"); });
+removeAllPlayersBtn.addEventListener("click", () => { handleGroupRemoval("all", "¿Estás seguro de que quieres elminar a todos los jugdadores?"); });
