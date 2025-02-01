@@ -33,6 +33,14 @@
 	--control-btn-pressed: hsl(276, 40%, 30%);
 	--control-btn-disabled: hsl(276, 15%, 30%);
 	--control-btn-fg-disabled: #cabdcc;
+
+	--capture-panel-bg: hsl(34, 5%, 25%);
+	--capture-panel-header-bg: hsl(34, 30%, 25%);
+
+	--saved-panel-bg: hsl(147, 5%, 25%);
+	--saved-panel-header-bg: hsl(147, 30%, 25%);
+	--saved-panel-entry-bg: hsl(147, 15%, 15%);
+	--saved-panel-speed-fg: hsl(147, 50%, 75%);
 }
 
 body {
@@ -262,11 +270,11 @@ button.ctrl-btn {
 	background: var(--control-btn-bg);
 	color: var(--control-btn-fg);
 
-	padding: 10px;
-	margin: 0 5px;
+	padding: 0.5em;
+	margin: 0 0.2em;
 
 	border: none;
-	border-radius: 7px;
+	border-radius: 0.35em;
 }
 
 button.ctrl-btn:hover {
@@ -279,6 +287,18 @@ button.ctrl-btn:active {
 
 button.ctrl-btn:disabled {
 	background: var(--control-btn-disabled);
+}
+
+button#start-cycle {
+	margin: 0.5em 0 0 0;
+}
+
+button#erase-all {
+	margin: 0 0 0 0.2em !important;
+}
+
+button#erase-c1 {
+	margin: 0 0.2em 0 0 !important;
 }
 
 button#start-turn {
@@ -328,4 +348,82 @@ section#bonus-btns {
 section#bonus-btns>button {
 	margin: .25em 0;
 	height: 15%;
+}
+
+section#final-results {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+
+	height: 98vh;
+	width: 33vw;
+}
+
+section#captures {
+	background: var(--capture-panel-bg);
+	border-radius: 0.5em;
+}
+
+section#captures-header {
+	background: var(--capture-panel-header-bg);
+	border-radius: 0.5em 0.5em 0 0;
+}
+
+li.c1-entry {
+	background: var(--c1-player-panel-entry-bg);
+}
+
+li.c2-entry {
+	background: var(--c2-player-panel-entry-bg);
+}
+
+li.c1-entry>p {
+	color: var(--c1-player-panel-speed-fg);
+}
+
+li.c2-entry>p {
+	color: var(--c2-player-panel-speed-fg);
+}
+
+section#saved {
+	background: var(--saved-panel-bg);
+	margin: 0.5em 0 0 0;
+	border-radius: 0.5em 0.5em 0 0;
+}
+
+section#saved-header {
+	background: var(--saved-panel-header-bg);
+	border-radius: 0.5em 0.5em 0 0;
+}
+
+ul#saved-list {
+	display: flex;
+	flex-direction: column;
+	list-style-type: none;
+
+	margin: 0;
+	padding: 0;
+}
+
+ul#saved-list>li {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+
+	font-weight: 500;
+	font-size: 1.35em;
+
+	padding: 0.25em;
+
+	background: var(--saved-panel-entry-bg);
+}
+
+ul#saved-list>li>p {
+	margin: 0;
+	color: var(--saved-panel-speed-fg);
+}
+
+button#next-cycle {
+	margin: 0.5em 0 0 0;
 }
