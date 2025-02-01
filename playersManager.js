@@ -1,6 +1,7 @@
 import { stateManager } from "./stateManager.js";
+import { diceRolled } from "./rollManager.js";
 
-const playersUpdateEv = new Event("players-update");
+export const playersUpdateEv = new Event("players-update");
 
 const uiElements = {
 	"c1": {
@@ -53,7 +54,6 @@ class Player {
 		this.group = group;
 		this.selected = false;
 		this.speed = 0;
-		this.speedBonus = 0;
 		this.cooperation = false;
 	}
 }
@@ -61,6 +61,7 @@ class Player {
 class PlayersManager {
 	constructor() {
 		this.players = JSON.parse(window.localStorage.getItem("players")) || [];
+		this.playersInGame = [];
 		this.lastSelected = null;
 		this.lastRemoved = null;
 		this.lastCreated = null;
@@ -99,7 +100,11 @@ class PlayersManager {
 	}
 
 	handlePlayerSelection(player) {
-		if (stateManager.state !== "playerSelect") return;
+		if (!stateManager.state.includes("PlayerSelect") || stateManager.state.slice(0, 2) !== player.group) return;
+		if (this.playersInGame.some(pl => pl === player)) {
+			window.alert("Este jugador ya ha tirado en este turno");
+			return;
+		}
 		const prevSelected = this.players.find(pl => pl.selected);
 		if (prevSelected && prevSelected !== player) {
 			prevSelected.selected = false;
@@ -108,6 +113,7 @@ class PlayersManager {
 
 		player.selected = !player.selected;
 		this.lastSelected = player;
+		this.playersInGame.push(player);
 		document.dispatchEvent(playersUpdateEv);
 	}
 
@@ -145,6 +151,18 @@ document.addEventListener("players-update", () => {
 			: "";
 
 		const playerEntry = document.querySelector(`li#${nameToId(playersManager.lastSelected.name)}`);
+		if (playersManager.lastSelected.cooperation && diceRolled) {
+			const coopPlayers = playersManager.playersInGame.filter(pl => pl.cooperation);
+			const fastestPlayer = coopPlayers.toSorted((prev, curr) => prev.speed - curr.speed)[coopPlayers.length - 1];
+			for (const player of coopPlayers) {
+				player.speed = fastestPlayer.speed;
+				document.querySelector(`li#${nameToId(player.name)}>p`).innerHTML = fastestPlayer.speed;
+			}
+		} else {
+			const playerSpeed = document.querySelector(`li#${nameToId(playersManager.lastSelected.name)}>p`);
+			playerSpeed.innerHTML = playersManager.lastSelected.speed;
+		}
+
 		playerEntry.style.background = bgColor;
 	}
 
