@@ -12,7 +12,9 @@ const uiElements = {
 	speedAmp: document.querySelector("button#speed-amp"),
 	coop: document.querySelector("button#coop"),
 	speedNerf: document.querySelector("button#speed-nerf"),
-	finishTurn: document.querySelector("button#finish-turn")
+	finishTurn: document.querySelector("button#finish-turn"),
+	nextCycle: document.querySelector("button#next-cycle"),
+	cancelSelection: document.querySelector("button#cancel-selection")
 }
 
 const stateElementDict = {
@@ -30,17 +32,21 @@ const stateElementDict = {
 		speedAmp: uiElements.speedAmp,
 		coop: uiElements.coop,
 		speedNerf: uiElements.speedNerf,
-		finishTurn: uiElements.finishTurn
+		finishTurn: uiElements.finishTurn,
+		cancelSelection: uiElements.cancelSelection
 	},
 	"c2PlayerSelect": {},
-	"finalResults": {}
+	"finalResults": {
+		nextCycle: uiElements.nextCycle
+	},
+	"tie-break": {}
 };
 
 document.addEventListener("change-state", () => {
 	for (const el of Object.values(stateElementDict[stateManager.state])) {
 		if (el === uiElements.finishRoll) continue;
 		if (el === uiElements.finishTurn
-			&& playersManager.playersInGame.filter(pl => pl.group === playersManager.lastSelected.group).length < 2) continue;
+			&& playersManager.playersInGame.filter(pl => pl.group === playersManager.lastSelected.group).length === 1) continue;
 		el.disabled = false;
 	}
 	for (const group of Object.keys(stateElementDict).filter(st => st !== stateManager.state))
