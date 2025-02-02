@@ -41,6 +41,11 @@
 	--saved-panel-header-bg: hsl(147, 30%, 25%);
 	--saved-panel-entry-bg: hsl(147, 15%, 15%);
 	--saved-panel-speed-fg: hsl(147, 50%, 75%);
+
+	--hunger-panel-bg: hsl(346, 5%, 25%);
+	--hunger-panel-header-bg: hsl(346, 30%, 25%);
+	--hunger-panel-entry-bg: hsl(346, 15%, 15%);
+	--hunger-panel-speed-fg: hsl(346, 50%, 75%);
 }
 
 body {
@@ -63,6 +68,10 @@ section#players-panel {
 
 	height: 98vh;
 	width: 33vw;
+}
+
+button#cancel-selection {
+	margin: 0 0 0.35em 0;
 }
 
 section#primary-consumers-list {
@@ -348,6 +357,7 @@ section#bonus-btns {
 section#bonus-btns>button {
 	margin: .25em 0;
 	height: 15%;
+	min-width: 7em;
 }
 
 section#final-results {
@@ -396,7 +406,7 @@ section#saved-header {
 	border-radius: 0.5em 0.5em 0 0;
 }
 
-ul#saved-list {
+ul.results-list {
 	display: flex;
 	flex-direction: column;
 	list-style-type: none;
@@ -405,7 +415,7 @@ ul#saved-list {
 	padding: 0;
 }
 
-ul#saved-list>li {
+ul.results-list>li {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
@@ -415,15 +425,62 @@ ul#saved-list>li {
 	font-size: 1.35em;
 
 	padding: 0.25em;
+}
 
+ul#saved-list>li {
 	background: var(--saved-panel-entry-bg);
 }
 
-ul#saved-list>li>p {
+ul#hunger-list>li {
+	background: var(--hunger-panel-entry-bg);
+}
+
+ul.results-list>li>p {
 	margin: 0;
+}
+
+ul#saved-list>li>p {
 	color: var(--saved-panel-speed-fg);
+}
+
+ul#hunger-list>li>p {
+	color: var(--hunger-panel-speed-fg);
+}
+
+section#hunger {
+	background: var(--hunger-panel-bg);
+	margin: 0.5em 0 0 0;
+	border-radius: 0.5em 0.5em 0 0;
+}
+
+section#hunger-header {
+	background: var(--hunger-panel-header-bg);
+	border-radius: 0.5em 0.5em 0 0;
 }
 
 button#next-cycle {
 	margin: 0.5em 0 0 0;
+}
+
+section#tie-break {
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+
+	background: var(--hunger-panel-bg);
+	margin: 0 0 0.5em 0;
+	padding: 0.35em;
+	opacity: 0%;
+	border-radius: 0.5em;
+}
+
+section#tie-break>p {
+	font-weight: 500;
+	font-size: 2.25em;
+	margin: 0;
+	color: var(--c2-player-panel-speed-fg);
+}
+
+section#tie-break>h2 {
+	margin: 0;
 }
