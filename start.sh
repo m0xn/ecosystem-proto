@@ -13,5 +13,6 @@ if [[ ! $? -eq 0 ]]; then
 	fi
 fi
 
-$PYTHON_EXEC -m http.server 8080 &
+cd $PWD # Ensure to be in the right directory to start the server I guess
+$PYTHON_EXEC -m http.server 8080 & >/dev/null
 exo-open --launch WebBrowser localhost:8080

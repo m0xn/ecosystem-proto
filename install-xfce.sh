@@ -9,4 +9,4 @@ echo "Type=Application" >> ~/Desktop/sim-app.desktop
 echo "Comment=Aplicación para resolver la depredación en la simulación del ecosistema" >> ~/Desktop/sim-app.desktop
 echo "Terminal=false" >> ~/Desktop/sim-app.desktop
 echo "Icon=$PWD/sprites/leafsprite.png" >> ~/Desktop/sim-app.desktop
-echo "Exec=$PWD/start.sh 8000 >/dev/null" >> ~/Desktop/sim-app.desktop
+echo "Exec=$PWD/start.sh" >> ~/Desktop/sim-app.desktop
