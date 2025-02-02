@@ -23,6 +23,7 @@ function handleSpeedMod(speedMod) {
 
 function rollDice(dice, interval = 125) {
 	cancelSelectionBtn.disabled = true;
+	finishTurnBtn.disabled = true;
 	const iters = MAXITERS - playersManager.playersInGame.length * 2 > MINITERS
 		? MAXITERS - playersManager.playersInGame.length * 2
 		: MINITERS;
@@ -213,6 +214,7 @@ finishRollBtn.addEventListener("click", () => {
 });
 
 finishTurnBtn.addEventListener("click", () => {
+	finishTurnBtn.disabled = true;
 	if (playersManager.lastSelected.group === "c1") stateManager.changeState("c2PlayerSelect");
 	else {
 		playersManager.lastSelected.selected = false;

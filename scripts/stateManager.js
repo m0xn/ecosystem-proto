@@ -32,7 +32,6 @@ const stateElementDict = {
 		speedAmp: uiElements.speedAmp,
 		coop: uiElements.coop,
 		speedNerf: uiElements.speedNerf,
-		finishTurn: uiElements.finishTurn,
 		cancelSelection: uiElements.cancelSelection
 	},
 	"c2PlayerSelect": {},
@@ -45,8 +44,6 @@ const stateElementDict = {
 document.addEventListener("change-state", () => {
 	for (const el of Object.values(stateElementDict[stateManager.state])) {
 		if (el === uiElements.finishRoll) continue;
-		if (el === uiElements.finishTurn
-			&& playersManager.playersInGame.filter(pl => pl.group === playersManager.lastSelected.group).length === 1) continue;
 		el.disabled = false;
 	}
 	for (const group of Object.keys(stateElementDict).filter(st => st !== stateManager.state))

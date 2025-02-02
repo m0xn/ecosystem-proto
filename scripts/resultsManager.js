@@ -36,6 +36,7 @@ document.addEventListener("change-state", async () => {
 });
 
 nextCycleBtn.addEventListener("click", () => {
+	playersManager.playersInGame = [];
 	playersManager.players.forEach(pl => {
 		pl.speed = 0;
 		pl.cooperation = false;
