@@ -271,7 +271,6 @@ section#control-buttons {
 
 button.ctrl-btn {
 	font-family: "Rubik", serif;
-	font-optical-sizing: auto;
 	font-weight: 500;
 	font-style: normal;
 	font-size: 1.35em;
@@ -279,7 +278,7 @@ button.ctrl-btn {
 	background: var(--control-btn-bg);
 	color: var(--control-btn-fg);
 
-	padding: 0.5em;
+	padding: 0.45em;
 	margin: 0 0.2em;
 
 	border: none;
