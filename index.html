@@ -10,6 +10,7 @@
 	</head>
 	<body>
 		<section id="players-panel">
+			<button id="cancel-selection" class="ctrl-btn" disabled="true">Cancelar selección</button>
 			<section id="primary-consumers-list" class="player-list">
 				<section id="c1-list-header" class="list-header">
 					<img src="sprites/leafsprite.png" alt="Leaf sprite"/>
@@ -41,7 +42,9 @@
 		</section>
 		<section id="dice-roll">
 			<section id="main-dice-ui">
-				<button id="finish-turn" class="ctrl-btn" disabled="true">Terminar turno</button>
+				<section id="upper-buttons">
+					<button id="finish-turn" class="ctrl-btn" disabled="true">Terminar turno</button>
+				</section>
 				<section id="dices">
 					<img id="left-dice" class="dice" src="sprites/dice1.png" alt="Left dice" width="300px"/>
 					<img id="right-dice" class="dice" src="sprites/dice1.png" alt="Right dice" width="300px"/>
@@ -55,40 +58,28 @@
 			</section>
 		</section>
 		<section id="final-results">
+			<section id="tie-break">
+			</section>
 			<section id="captures">
 				<section id="captures-header" class="list-header">
 					<img src="sprites/deathicon.png" alt="Death sprite">
 					<h2>Capturas</h2>
 				</section>
-				<ul id="captures-list" class="list-items">
-					<li id="Rodrigo" class="c2-entry">Rodrigo<p>0</p></li>
-					<li id="Rodrigo" class="c1-entry"><p>0</p>Rodrigo</li>
-					<li id="Rodrigo" class="c2-entry">Rodrigo<p>0</p></li>
-					<li id="Rodrigo" class="c1-entry"><p>0</p>Rodrigo</li>
-					<li id="Rodrigo" class="c2-entry">Rodrigo<p>0</p></li>
-					<li id="Rodrigo" class="c1-entry"><p>0</p>Rodrigo</li>
-					<li id="Rodrigo" class="c2-entry">Rodrigo<p>0</p></li>
-					<li id="Rodrigo" class="c1-entry"><p>0</p>Rodrigo</li>
-					<li id="Rodrigo" class="c2-entry">Rodrigo<p>0</p></li>
-					<li id="Rodrigo" class="c1-entry"><p>0</p>Rodrigo</li>
-					<li id="Rodrigo" class="c2-entry">Rodrigo<p>0</p></li>
-					<li id="Rodrigo" class="c1-entry"><p>0</p>Rodrigo</li>
-				</ul>
+				<ul id="captures-list" class="list-items"></ul>
 			</section>
 			<section id="saved">
 				<section id="saved-header" class="list-header">
 					<img src="sprites/hearticon.png" alt="Life Sprite">
 					<h2>Salvados</h2>
 				</section>
-				<ul id="saved-list">
-					<li id="Rodrigo" class="saved-entry">Rodrigo<p>0</p></li>
-					<li id="Rodrigo" class="saved-entry">Rodrigo<p>0</p></li>
-					<li id="Rodrigo" class="saved-entry">Rodrigo<p>0</p></li>
-					<li id="Rodrigo" class="saved-entry">Rodrigo<p>0</p></li>
-					<li id="Rodrigo" class="saved-entry">Rodrigo<p>0</p></li>
-					<li id="Rodrigo" class="saved-entry">Rodrigo<p>0</p></li>
-					<li id="Rodrigo" class="saved-entry">Rodrigo<p>0</p></li>
-				</ul>
+				<ul id="saved-list" class="results-list"></ul>
+			</section>
+			<section id="hunger">
+				<section id="hunger-header" class="list-header">
+					<img src="sprites/hungericon.png" alt="Hunger icon">
+					<h2>Hambrientos</h2>
+				</section>
+				<ul id="hunger-list" class="results-list"></ul>
 			</section>
 			<button id="next-cycle" class="ctrl-btn">Siguiente ciclo</button>
 		</section>
@@ -97,4 +88,5 @@
 	<script src="scripts/stateManager.js" type="module"></script>
 	<script src="scripts/gameManager.js" type="module"></script>
 	<script src="scripts/rollManager.js" type="module"></script>
+	<script src="scripts/resultsManager.js" type="module"></script>
 </html>
