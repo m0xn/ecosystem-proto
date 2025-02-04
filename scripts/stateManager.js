@@ -1,5 +1,3 @@
-import { playersManager } from "./playersManager.js";
-
 const changeStateEv = new Event("change-state");
 const uiElements = {
 	startCycle: document.querySelector("button#start-cycle"),
