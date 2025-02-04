@@ -90,6 +90,7 @@ function checkForTie() {
 				setNextTieBreakPlayer(matchingSpeeds[0]);
 
 				stateManager.changeState("tie-break");
+				if (!finishTurnBtn.disabled) finishTurnBtn.disabled = true;
 				document.dispatchEvent(playersUpdateEv);
 				resetDices();
 
