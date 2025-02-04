@@ -1,5 +1,6 @@
 #!/bin/bash
 PYTHON_EXEC=python3
+REPO_PATH=$(find ~ -type d -name ecosystem-proto 2>/dev/null)
 
 python3 -V >/dev/null
 if [[ ! $? -eq 0 ]]; then
@@ -13,5 +14,5 @@ if [[ ! $? -eq 0 ]]; then
 	fi
 fi
 
-$PYTHON_EXEC -m http.server 8080 -d $1 & >/dev/null
-exo-open --launch WebBrowser localhost:8080
+$PYTHON_EXEC -m http.server -d $REPO_PATH & >/dev/null
+exo-open --launch WebBrowser localhost:8000
