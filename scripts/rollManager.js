@@ -49,6 +49,7 @@ function rollDice(dice, interval = 125) {
 				dice.rolling = false;
 				dice.value = rolledNumber;
 				dice.rolled = true;
+				dice.el.style = "opacity: 65%;";
 				resolve(dice.value);
 				if (dice.el.id == "left-dice" && rightDice.rolled
 					|| dice.el.id == "right-dice" && leftDice.rolled) {
@@ -154,7 +155,7 @@ const buttonsText = {
 	},
 	speedAmp: {
 		c1: "Huida rápida",
-		c2: "Huida rápida"
+		c2: "Ataque rápido"
 	},
 	speedNerf: {
 		c1: "Herida",
@@ -165,8 +166,9 @@ const buttonsText = {
 const finishRollEv = new Event("finish-roll");
 const finishTieEv = new Event("finish-tie");
 document.addEventListener("finish-roll", () => {
+	if (stateManager.state === "tie-break") return;
 	finishRollBtn.disabled = false;
-	if (stateManager.state !== "tie-break") finishTurnBtn.disabled = false;
+	finishTurnBtn.disabled = false;
 });
 
 const SPEEDBOOST = 6;
@@ -224,6 +226,8 @@ coopBtn.addEventListener("click", () => {
 });
 
 const resetDices = () => {
+	leftDice.el.style = "";
+	rightDice.el.style = "";
 	leftDice.rolled = false;
 	rightDice.rolled = false;
 	diceRolled = false;
