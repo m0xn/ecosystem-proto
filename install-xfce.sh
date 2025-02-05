@@ -15,6 +15,6 @@ echo "Type=Application" >> $DESKTOP_DIR/sim-app.desktop
 echo "Comment=Aplicación para resolver la depredación en la simulación del ecosistema" >> $DESKTOP_DIR/sim-app.desktop
 echo "Terminal=false" >> $DESKTOP_DIR/sim-app.desktop
 echo "Icon=$PWD/sprites/leafsprite.png" >> $DESKTOP_DIR/sim-app.desktop
-echo "Exec=$PWD/start.sh" >> $DESKTOP_DIR/sim-app.desktop # Pass a reference to THIS directory to prevent the python server from opening in another dir
+echo "Exec=$PWD/start.sh" $PWD >> $DESKTOP_DIR/sim-app.desktop # Pass a reference to THIS directory to prevent the python server from opening in another dir
 
 chmod 775 $DESKTOP_DIR/sim-app.desktop
