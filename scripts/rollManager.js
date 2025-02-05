@@ -1,4 +1,4 @@
-import { playersManager, playersUpdateEv } from "./playersManager.js";
+import { playersManager, playersUpdateEv, disablePlayerEntry, nameToId } from "./playersManager.js";
 import { stateManager } from "./stateManager.js";
 
 export let diceRolled = false;
@@ -12,8 +12,11 @@ class Dice {
 	}
 }
 
-const MINITERS = 10;
+const MINITERS = 15;
 const MAXITERS = 30;
+
+const SPEEDBOOST = { "c1": 6, "c2": 6 };
+const SPEEDNERF = { "c1": -2, "c2": -3 };
 
 function handleSpeedMod(speedMod) {
 	playersManager.lastSelected.speed += speedMod;
@@ -122,7 +125,6 @@ function checkForTie() {
 }
 
 function newHandleTieBreak() {
-	console.log(matchingSpeeds);
 	const newIdx = matchingSpeeds.indexOf(playersManager.lastSelected) + 1;
 	if (newIdx > matchingSpeeds.length - 1) {
 		if (matchingSpeeds.every(pl => pl.speed === matchingSpeeds[0].speed)) {
@@ -169,14 +171,14 @@ document.addEventListener("finish-roll", () => {
 	if (stateManager.state === "tie-break") return;
 	finishRollBtn.disabled = false;
 	finishTurnBtn.disabled = false;
+	playersManager.lastSelected.selected = false;
+	disablePlayerEntry(document.querySelector(`li#${nameToId(playersManager.lastSelected.name)}`), playersManager.lastSelected);
 });
-
-const SPEEDBOOST = 6;
-const SPEEDNERF = -2;
 
 const speedAmpBtn = document.querySelector("button#speed-amp");
 const speedNerfBtn = document.querySelector("button#speed-nerf");
 const coopBtn = document.querySelector("button#coop");
+const mimesisBtn = document.querySelector("button#mimesis");
 
 const tieBreakHeader = document.querySelector("section#tie-break");
 
@@ -186,6 +188,7 @@ document.addEventListener("change-state", () => {
 	speedAmpBtn.innerHTML = buttonsText.speedAmp[group];
 	coopBtn.innerHTML = buttonsText.coop[group];
 	speedNerfBtn.innerHTML = buttonsText.speedNerf[group];
+	if (playersManager.lastSelected.group === "c2") mimesisBtn.disabled = true;
 });
 
 const finishRollBtn = document.querySelector("button#finish-roll");
@@ -215,13 +218,19 @@ const disableButtons = () => {
 	speedAmpBtn.disabled = true;
 	speedNerfBtn.disabled = true;
 	coopBtn.disabled = true;
+	mimesisBtn.disabled = true;
 }
 
-speedAmpBtn.addEventListener("click", () => { handleSpeedMod(SPEEDBOOST); });
-speedNerfBtn.addEventListener("click", () => { handleSpeedMod(SPEEDNERF); });
+speedAmpBtn.addEventListener("click", () => { handleSpeedMod(SPEEDBOOST[playersManager.lastSelected.group]); });
+speedNerfBtn.addEventListener("click", () => { handleSpeedMod(SPEEDNERF[playersManager.lastSelected.group]); });
 coopBtn.addEventListener("click", () => {
 	playersManager.lastSelected.cooperation = true;
 	document.dispatchEvent(playersUpdateEv);
+	disableButtons();
+});
+mimesisBtn.addEventListener("click", () => {
+	playersManager.lastSelected.mimesis = true;
+	console.log(playersManager.lastSelected);
 	disableButtons();
 });
 
