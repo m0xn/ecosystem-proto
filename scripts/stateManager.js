@@ -10,6 +10,7 @@ const uiElements = {
 	speedAmp: document.querySelector("button#speed-amp"),
 	coop: document.querySelector("button#coop"),
 	speedNerf: document.querySelector("button#speed-nerf"),
+	mimesis: document.querySelector("button#mimesis"),
 	finishTurn: document.querySelector("button#finish-turn"),
 	nextCycle: document.querySelector("button#next-cycle"),
 	cancelSelection: document.querySelector("button#cancel-selection")
@@ -30,6 +31,7 @@ const stateElementDict = {
 		speedAmp: uiElements.speedAmp,
 		coop: uiElements.coop,
 		speedNerf: uiElements.speedNerf,
+		mimesis: uiElements.mimesis,
 		cancelSelection: uiElements.cancelSelection
 	},
 	"c2PlayerSelect": {},

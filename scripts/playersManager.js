@@ -48,6 +48,12 @@ function handleGroupRemoval(group, msg) {
 
 export const nameToId = name => name.toLowerCase().replaceAll(" ", "-");
 
+export function disablePlayerEntry(entry, player) {
+	entry.style.background = "";
+	entry.style.color = getComputedStyle(document.body).getPropertyValue(`--${player.group}-player-panel-entry-ingame-fg`);
+	document.querySelector(`li#${entry.id}>p`).style.color = getComputedStyle(document.body).getPropertyValue(`--${player.group}-player-panel-entry-ingame-speed`);
+}
+
 class Player {
 	constructor(name, group) {
 		this.name = name;
@@ -55,6 +61,7 @@ class Player {
 		this.selected = false;
 		this.speed = 0;
 		this.cooperation = false;
+		this.mimesis = false;
 	}
 }
 
@@ -102,11 +109,6 @@ class PlayersManager {
 		if (this.playersInGame.some(pl => pl === player)) {
 			window.alert("Este jugador ya ha tirado en este turno");
 			return;
-		}
-		const prevSelected = this.players.find(pl => pl.selected);
-		if (prevSelected && prevSelected !== player) {
-			prevSelected.selected = false;
-			document.querySelector(`li#${nameToId(prevSelected.name)}`).style = "";
 		}
 
 		player.selected = !player.selected;

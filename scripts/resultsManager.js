@@ -4,12 +4,14 @@ import { playersManager, nameToId } from "./playersManager.js";
 const capturesList = document.querySelector("ul#captures-list");
 const savedList = document.querySelector("ul#saved-list");
 const hungerList = document.querySelector("ul#hunger-list");
+const hiddenList = document.querySelector("ul#hidden-list");
 
 const nextCycleBtn = document.querySelector("button#next-cycle");
 
 document.addEventListener("change-state", async () => {
 	if (stateManager.state !== "finalResults") return;
-	let c1Players = playersManager.playersInGame.filter(pl => pl.group === "c1" && pl.speed > 0).sort((prev, curr) => prev.speed - curr.speed);
+	let c1Players = playersManager.playersInGame.filter(pl => pl.group === "c1" && pl.speed > 0 && !pl.mimesis).sort((prev, curr) => prev.speed - curr.speed);
+	console.log(c1Players);
 	const c2Players = playersManager.playersInGame.filter(pl => pl.group === "c2" && pl.speed > 0).sort((prev, curr) => prev.speed - curr.speed);
 
 	const hungry = [];
@@ -33,6 +35,7 @@ document.addEventListener("change-state", async () => {
 
 	c1Players.forEach(pl => { savedList.appendChild(playersManager.createPlayerEntry(pl)); });
 	hungry.forEach(pl => { hungerList.appendChild(playersManager.createPlayerEntry(pl)); });
+	playersManager.playersInGame.filter(pl => pl.mimesis).forEach(pl => { hiddenList.appendChild(playersManager.createPlayerEntry(pl)); });
 });
 
 nextCycleBtn.addEventListener("click", () => {
@@ -40,10 +43,17 @@ nextCycleBtn.addEventListener("click", () => {
 	playersManager.players.forEach(pl => {
 		pl.speed = 0;
 		pl.cooperation = false;
-		document.querySelector(`li#${nameToId(pl.name)}>p`).innerHTML = 0;
+		const entry = document.querySelector(`li#${nameToId(pl.name)}`);
+		const speedPar = document.querySelector(`li#${nameToId(pl.name)}>p`);
+		speedPar.innerHTML = 0;
+		if (entry.style) {
+			entry.style = "";
+			speedPar.style = "";
+		}
 	});
 	while (capturesList.childNodes.length > 0) capturesList.removeChild(capturesList.firstChild);
 	while (savedList.childNodes.length > 0) savedList.removeChild(savedList.firstChild);
 	while (hungerList.childNodes.length > 0) hungerList.removeChild(hungerList.firstChild);
+	while (hiddenList.childNodes.length > 0) hiddenList.removeChild(hiddenList.firstChild);
 	stateManager.changeState("preCycle");
 });
