@@ -1,6 +1,6 @@
 #!/bin/bash
 PYTHON_EXEC=python3
-REPO_PATH=$(find ~ -type d -name ecosystem-proto 2>/dev/null)
+REPO_PATH=$(find ~ -type d -name "ecosystem-proto*" 2>/dev/null | head -n 1)
 
 python3 -V >/dev/null
 if [[ ! $? -eq 0 ]]; then
