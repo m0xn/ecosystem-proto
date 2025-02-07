@@ -11,7 +11,6 @@ const nextCycleBtn = document.querySelector("button#next-cycle");
 document.addEventListener("change-state", async () => {
 	if (stateManager.state !== "finalResults") return;
 	let c1Players = playersManager.playersInGame.filter(pl => pl.group === "c1" && pl.speed > 0 && !pl.mimesis).sort((prev, curr) => prev.speed - curr.speed);
-	console.log(c1Players);
 	const c2Players = playersManager.playersInGame.filter(pl => pl.group === "c2" && pl.speed > 0).sort((prev, curr) => prev.speed - curr.speed);
 
 	const hungry = [];

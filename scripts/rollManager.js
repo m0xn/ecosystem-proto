@@ -13,7 +13,7 @@ class Dice {
 }
 
 const MINITERS = 15;
-const MAXITERS = 30;
+const MAXITERS = 25;
 
 const SPEEDBOOST = { "c1": 6, "c2": 6 };
 const SPEEDNERF = { "c1": -2, "c2": -3 };
@@ -36,6 +36,8 @@ const setNextTieBreakPlayer = player => {
 	playersManager.lastSelected.speed = 0;
 }
 
+const clamp = (val, min, max = null) => val < min ? min : val > max && max ? max : val;
+
 function rollDice(dice, interval = 125) {
 	cancelSelectionBtn.disabled = true;
 	finishTurnBtn.disabled = true;
@@ -54,11 +56,7 @@ function rollDice(dice, interval = 125) {
 				dice.rolled = true;
 				dice.el.style = "opacity: 65%;";
 				resolve(dice.value);
-				if (dice.el.id == "left-dice" && rightDice.rolled
-					|| dice.el.id == "right-dice" && leftDice.rolled) {
-					document.dispatchEvent(finishRollEv);
-					diceRolled = true;
-				}
+				if (dice.el.id == "left-dice" && rightDice.rolled || dice.el.id == "right-dice" && leftDice.rolled) diceRolled = true;
 				clearInterval(rollingAnimID);
 			}
 			dice.el.src = `sprites/dice${rolledNumber}.png`;
@@ -171,8 +169,10 @@ document.addEventListener("finish-roll", () => {
 	if (stateManager.state === "tie-break") return;
 	finishRollBtn.disabled = false;
 	finishTurnBtn.disabled = false;
+	playersManager.lastSelected.speed = clamp(playersManager.lastSelected.speed, 0);
 	playersManager.lastSelected.selected = false;
 	disablePlayerEntry(document.querySelector(`li#${nameToId(playersManager.lastSelected.name)}`), playersManager.lastSelected);
+	document.dispatchEvent(playersUpdateEv);
 });
 
 const speedAmpBtn = document.querySelector("button#speed-amp");
@@ -193,6 +193,7 @@ document.addEventListener("change-state", () => {
 
 const finishRollBtn = document.querySelector("button#finish-roll");
 const finishTurnBtn = document.querySelector("button#finish-turn");
+finishTurnBtn.disabled = true; // Prevent the button from being enabled on load
 const cancelSelectionBtn = document.querySelector("button#cancel-selection");
 
 const leftDice = new Dice(document.querySelector("img#left-dice"));
@@ -203,7 +204,10 @@ leftDice.el.addEventListener("click", async () => {
 	const diceRes = await rollDice(leftDice);
 	playersManager.lastSelected.speed += diceRes;
 	document.dispatchEvent(playersUpdateEv);
-	if (stateManager.state === "tie-break" && rightDice.rolled) newHandleTieBreak();
+	if (rightDice.rolled) {
+		document.dispatchEvent(finishRollEv);
+		if (stateManager.state === "tie-break") newHandleTieBreak();
+	}
 });
 
 rightDice.el.addEventListener("click", async () => {
@@ -211,7 +215,10 @@ rightDice.el.addEventListener("click", async () => {
 	const diceRes = await rollDice(rightDice);
 	playersManager.lastSelected.speed += diceRes;
 	document.dispatchEvent(playersUpdateEv);
-	if (stateManager.state === "tie-break" && leftDice.rolled) newHandleTieBreak();
+	if (leftDice.rolled) {
+		document.dispatchEvent(finishRollEv);
+		if (stateManager.state === "tie-break") newHandleTieBreak();
+	}
 });
 
 const disableButtons = () => {
