@@ -1,5 +1,6 @@
 import { stateManager } from "./stateManager.js";
 import { playersManager, nameToId } from "./playersManager.js";
+import { resetDices } from "./rollManager.js";
 
 const capturesList = document.querySelector("ul#captures-list");
 const savedList = document.querySelector("ul#saved-list");
@@ -11,7 +12,6 @@ const nextCycleBtn = document.querySelector("button#next-cycle");
 document.addEventListener("change-state", async () => {
 	if (stateManager.state !== "finalResults") return;
 	let c1Players = playersManager.playersInGame.filter(pl => pl.group === "c1" && pl.speed > 0 && !pl.mimesis).sort((prev, curr) => prev.speed - curr.speed);
-	console.log(c1Players);
 	const c2Players = playersManager.playersInGame.filter(pl => pl.group === "c2" && pl.speed > 0).sort((prev, curr) => prev.speed - curr.speed);
 
 	const hungry = [];
@@ -26,7 +26,7 @@ document.addEventListener("change-state", async () => {
 		predatorEntry.className = "c2-entry";
 
 		const preyEntry = playersManager.createPlayerEntry(prey, true);
-		preyEntry.className = "c1-entry";
+		preyEntry.className = prey.exotic ? "c1-exotic-entry" : "c1-entry";
 
 		capturesList.appendChild(predatorEntry);
 		capturesList.appendChild(preyEntry);
@@ -51,9 +51,13 @@ nextCycleBtn.addEventListener("click", () => {
 			speedPar.style = "";
 		}
 	});
+
 	while (capturesList.childNodes.length > 0) capturesList.removeChild(capturesList.firstChild);
 	while (savedList.childNodes.length > 0) savedList.removeChild(savedList.firstChild);
 	while (hungerList.childNodes.length > 0) hungerList.removeChild(hungerList.firstChild);
 	while (hiddenList.childNodes.length > 0) hiddenList.removeChild(hiddenList.firstChild);
+
+	resetDices();
+	window.localStorage.setItem("players", JSON.stringify(playersManager.players));
 	stateManager.changeState("preCycle");
 });

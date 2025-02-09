@@ -48,10 +48,10 @@ function handleGroupRemoval(group, msg) {
 
 export const nameToId = name => name.toLowerCase().replaceAll(" ", "-");
 
-export function disablePlayerEntry(entry, player) {
+export function disablePlayerEntry(entry) {
 	entry.style.background = "";
-	entry.style.color = getComputedStyle(document.body).getPropertyValue(`--${player.group}-player-panel-entry-ingame-fg`);
-	document.querySelector(`li#${entry.id}>p`).style.color = getComputedStyle(document.body).getPropertyValue(`--${player.group}-player-panel-entry-ingame-speed`);
+	entry.style.opacity = "75%";
+	document.querySelector(`li#${entry.id}>p`).style.opacity = "75%";
 }
 
 class Player {
@@ -62,6 +62,7 @@ class Player {
 		this.speed = 0;
 		this.cooperation = false;
 		this.mimesis = false;
+		this.exotic = false;
 	}
 }
 
@@ -90,7 +91,7 @@ class PlayersManager {
 
 	createPlayerEntry(player, inverted = false) {
 		const entry = document.createElement("li");
-		entry.className = "list-entry";
+		entry.className = player.exotic ? "exotic-list-entry" : "list-entry";
 		entry.id = nameToId(player.name);
 		entry.innerHTML = inverted
 			? `<p>${player.speed}</p>${player.name}`
@@ -112,6 +113,7 @@ class PlayersManager {
 		}
 
 		player.selected = !player.selected;
+		if (player.exotic) player.speed = 4;
 		this.lastSelected = player;
 		this.playersInGame.push(player);
 		document.dispatchEvent(playersUpdateEv);
@@ -147,7 +149,9 @@ document.addEventListener("players-update", () => {
 
 	if (playersManager.lastSelected) {
 		const bgColor = playersManager.lastSelected.selected
-			? getComputedStyle(document.body).getPropertyValue(`--${playersManager.lastSelected.group}-player-panel-entry-selected`)
+			? getComputedStyle(document.body).getPropertyValue(playersManager.lastSelected.exotic
+				? `--${playersManager.lastSelected.group}-exotic-player-panel-entry-selected`
+				: `--${playersManager.lastSelected.group}-player-panel-entry-selected`)
 			: "";
 
 		const playerEntry = document.querySelector(`li#${nameToId(playersManager.lastSelected.name)}`);

@@ -4,9 +4,12 @@
 	--c1-player-panel-entry-bg: hsl(111, 15%, 15%);
 	--c1-player-panel-entry-hovered: hsl(111, 15%, 22.5%);
 	--c1-player-panel-entry-selected: hsl(111, 35%, 30%);
+	--c1-exotic-player-panel-entry-bg: hsl(193, 15%, 15%);
+	--c1-exotic-player-panel-entry-hovered: hsl(193, 15%, 22.5%);
+	--c1-exotic-player-panel-entry-selected: hsl(193, 35%, 30%);
 	--c1-player-panel-speed-fg: hsl(111, 50%, 75%);
-	--c1-player-panel-entry-ingame-fg: hsl(0, 0%, 60%);
-	--c1-player-panel-entry-ingame-speed: hsl(111, 25%, 50%);
+	--c1-exotic-player-panel-speed: hsl(193, 50%, 75%);
+	--c1-exotic-player-panel-name: hsl(193, 10%, 90%);
 
 	--c1-add-player-btn-bg: hsl(111, 5%, 50%);
 	--c1-add-player-btn-hovered: hsl(111, 5%, 65%);
@@ -20,8 +23,6 @@
 	--c2-player-panel-entry-hovered: hsl(7, 15%, 22.5%);
 	--c2-player-panel-entry-selected: hsl(7, 35%, 30%);
 	--c2-player-panel-speed-fg: hsl(7, 50%, 75%);
-	--c2-player-panel-entry-ingame-fg: hsl(0, 0%, 60%);
-	--c2-player-panel-entry-ingame-speed: hsl(7, 25%, 50%);
 
 	--c2-add-player-btn-bg: hsl(7, 5%, 50%);
 	--c2-add-player-btn-hovered: hsl(7, 5%, 65%);
@@ -32,11 +33,11 @@
 	--player-name-input-bg: hsl(0, 0%, 12.5%);
 
 	--control-btn-bg: hsl(276, 50%, 50%);
-	--control-btn-fg: #ebdced;
+	--control-btn-fg: hsl(0, 0%, 90%);
 	--control-btn-hovered: hsl(276, 60%, 60%);
 	--control-btn-pressed: hsl(276, 40%, 30%);
 	--control-btn-disabled: hsl(276, 15%, 30%);
-	--control-btn-fg-disabled: #cabdcc;
+	--control-btn-fg-disabled: hsl(0, 0%, 70%);
 
 	--capture-panel-bg: hsl(34, 5%, 25%);
 	--capture-panel-header-bg: hsl(34, 30%, 25%);
@@ -79,8 +80,38 @@ section#players-panel {
 	width: 33vw;
 }
 
+section#player-mod-btns {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+
+}
+
+section#player-mod-btns>button {
+	width: 100%;
+}
+
 button#cancel-selection {
-	margin: 0 0 0.35em 0;
+	margin: 0 0.15em 0.35em 0 !important;
+}
+
+button#exotic-specie {
+	background: hsl(193, 50%, 50%);
+	margin: 0 0 0.35em 0.15em;
+}
+
+button#exotic-specie:hover {
+	background: hsl(193, 60%, 60%);
+}
+
+button#exotic-specie:active {
+	background: hsl(193, 40%, 30%);
+	color: hsl(0, 0%, 70%)
+}
+
+button#exotic-specie:disabled {
+	opacity: 50%;
+	background: var(--control-btn-disabled);
 }
 
 section#primary-consumers-list {
@@ -146,12 +177,21 @@ ul#c1-list-items>li {
 	background: var(--c1-player-panel-entry-bg);
 }
 
+ul#c1-list-items>li.exotic-list-entry {
+	background: var(--c1-exotic-player-panel-entry-bg);
+	color: var(--c1-exotic-player-panel-name);
+}
+
 ul#c2-list-items>li {
 	background: var(--c2-player-panel-entry-bg);
 }
 
 ul#c1-list-items>li:hover {
 	background: var(--c1-player-panel-entry-hovered);
+}
+
+ul#c1-list-items>li.exotic-list-entry:hover {
+	background: var(--c1-exotic-player-panel-entry-hovered);
 }
 
 ul#c2-list-items>li:hover {
@@ -164,6 +204,10 @@ ul.list-items>li>p {
 
 ul#c1-list-items>li>p {
 	color: var(--c1-player-panel-speed-fg);
+}
+
+ul#c1-list-items>li.exotic-list-entry>p {
+	color: var(--c1-exotic-player-panel-speed);
 }
 
 ul#c2-list-items>li>p {
@@ -303,6 +347,7 @@ button.ctrl-btn:active {
 }
 
 button.ctrl-btn:disabled {
+	opacity: 50%;
 	background: var(--control-btn-disabled);
 }
 
@@ -391,12 +436,20 @@ li.c1-entry {
 	background: var(--c1-player-panel-entry-bg);
 }
 
+li.c1-exotic-entry {
+	background: var(--c1-exotic-player-panel-entry-bg);
+}
+
 li.c2-entry {
 	background: var(--c2-player-panel-entry-bg);
 }
 
 li.c1-entry>p {
 	color: var(--c1-player-panel-speed-fg);
+}
+
+li.c1-exotic-entry>p {
+	color: var(--c1-exotic-player-panel-speed);
 }
 
 li.c2-entry>p {
