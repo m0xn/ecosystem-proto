@@ -13,7 +13,8 @@ const uiElements = {
 	mimesis: document.querySelector("button#mimesis"),
 	finishTurn: document.querySelector("button#finish-turn"),
 	nextCycle: document.querySelector("button#next-cycle"),
-	cancelSelection: document.querySelector("button#cancel-selection")
+	cancelSelection: document.querySelector("button#cancel-selection"),
+	exoticBtn: document.querySelector("button#exotic-specie")
 }
 
 const stateElementDict = {
@@ -32,7 +33,8 @@ const stateElementDict = {
 		coop: uiElements.coop,
 		speedNerf: uiElements.speedNerf,
 		mimesis: uiElements.mimesis,
-		cancelSelection: uiElements.cancelSelection
+		cancelSelection: uiElements.cancelSelection,
+		exoticBtn: uiElements.exoticBtn
 	},
 	"c2PlayerSelect": {},
 	"finalResults": {

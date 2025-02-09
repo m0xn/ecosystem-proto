@@ -1,5 +1,6 @@
 import { stateManager } from "./stateManager.js";
 import { playersManager, nameToId } from "./playersManager.js";
+import { resetDices } from "./rollManager.js";
 
 const capturesList = document.querySelector("ul#captures-list");
 const savedList = document.querySelector("ul#saved-list");
@@ -25,7 +26,7 @@ document.addEventListener("change-state", async () => {
 		predatorEntry.className = "c2-entry";
 
 		const preyEntry = playersManager.createPlayerEntry(prey, true);
-		preyEntry.className = "c1-entry";
+		preyEntry.className = prey.exotic ? "c1-exotic-entry" : "c1-entry";
 
 		capturesList.appendChild(predatorEntry);
 		capturesList.appendChild(preyEntry);
@@ -50,9 +51,13 @@ nextCycleBtn.addEventListener("click", () => {
 			speedPar.style = "";
 		}
 	});
+
 	while (capturesList.childNodes.length > 0) capturesList.removeChild(capturesList.firstChild);
 	while (savedList.childNodes.length > 0) savedList.removeChild(savedList.firstChild);
 	while (hungerList.childNodes.length > 0) hungerList.removeChild(hungerList.firstChild);
 	while (hiddenList.childNodes.length > 0) hiddenList.removeChild(hiddenList.firstChild);
+
+	resetDices();
+	window.localStorage.setItem("players", JSON.stringify(playersManager.players));
 	stateManager.changeState("preCycle");
 });
