@@ -28,6 +28,7 @@ const stateElementDict = {
 		addC2Player: uiElements.addC2Player,
 	},
 	"c1PlayerSelect": {},
+	"c2PlayerSelect": {},
 	"playerRoll": {
 		finishRoll: uiElements.finishRoll,
 		speedAmp: uiElements.speedAmp,
@@ -37,12 +38,12 @@ const stateElementDict = {
 		cancelSelection: uiElements.cancelSelection,
 		exoticBtn: uiElements.exoticBtn
 	},
-	"c2PlayerSelect": {},
 	"finalResults": {
 		nextCycle: uiElements.nextCycle
 	},
 	"tie-break": {},
-	"freeRoll": {}
+	"freeRoll": {},
+	"debug": {}
 };
 
 document.addEventListener("change-state", () => {

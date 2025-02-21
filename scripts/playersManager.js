@@ -106,6 +106,18 @@ class PlayersManager {
 	}
 
 	handlePlayerSelection(player) {
+		if (stateManager.state === "debug") {
+			if (this.lastSelected) {
+				this.lastSelected.selected = false;
+				document.dispatchEvent(playersUpdateEv);
+			}
+
+			player.selected = !player.selected;
+			this.lastSelected = player;
+			document.dispatchEvent(playersUpdateEv);
+			return;
+		}
+
 		if (!stateManager.state.includes("PlayerSelect") || stateManager.state.slice(0, 2) !== player.group) return;
 		if (this.playersInGame.some(pl => pl === player)) {
 			window.alert("Este jugador ya ha tirado en este turno");
@@ -180,6 +192,14 @@ uiElements.c1.addPlayerBtn.addEventListener("click", () => { handleUIPlayerAdd("
 uiElements.c2.addPlayerBtn.addEventListener("click", () => { handleUIPlayerAdd("c2"); });
 
 window.addEventListener("keydown", e => {
+	if (stateManager.state === "debug" && playersManager.lastSelected) {
+		switch (e.key) {
+			case "ArrowUp": playersManager.lastSelected.speed++; break;
+			case "ArrowDown": playersManager.lastSelected.speed--; break;
+			default: return;
+		}
+		document.dispatchEvent(playersUpdateEv);
+	}
 	if (e.key !== "Enter" || stateManager.state !== "preCycle") return;
 	if (document.activeElement == uiElements.c1.nameField) handleUIPlayerAdd("c1");
 	if (document.activeElement == uiElements.c2.nameField) handleUIPlayerAdd("c2");

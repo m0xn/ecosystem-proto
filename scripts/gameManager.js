@@ -1,5 +1,5 @@
 import { stateManager } from "./stateManager.js";
-import { playersManager } from "./playersManager.js";
+import { playersManager, playersUpdateEv } from "./playersManager.js";
 
 const startCycleBtn = document.querySelector("button#start-cycle");
 const freeRollBtn = document.querySelector("button#free-roll");
@@ -22,6 +22,22 @@ freeRollBtn.addEventListener("click", () => {
 	stateManager.saveState();
 	stateManager.changeState("freeRoll");
 	freeRollBtn.innerHTML = "Restaurar estado";
+});
+
+document.addEventListener("keydown", e => {
+	if (stateManager.state === "debug" && e.key === "Escape") {
+		stateManager.changeState(stateManager.savedState);
+		if (playersManager.lastSelected) {
+			playersManager.lastSelected.selected = false;
+			document.dispatchEvent(playersUpdateEv);
+		}
+	}
+
+	if (e.shiftKey && e.key === "D" && stateManager.state !== "debug") {
+		stateManager.saveState();
+		stateManager.changeState("debug");
+		console.log(stateManager);
+	}
 });
 
 document.addEventListener("players-update", () => {
