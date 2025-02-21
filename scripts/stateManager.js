@@ -14,7 +14,8 @@ const uiElements = {
 	finishTurn: document.querySelector("button#finish-turn"),
 	nextCycle: document.querySelector("button#next-cycle"),
 	cancelSelection: document.querySelector("button#cancel-selection"),
-	exoticBtn: document.querySelector("button#exotic-specie")
+	exoticBtn: document.querySelector("button#exotic-specie"),
+	freeRollBtn: document.querySelector("button#free-roll")
 }
 
 const stateElementDict = {
@@ -24,7 +25,7 @@ const stateElementDict = {
 		eraseC2: uiElements.eraseC2,
 		eraseAll: uiElements.eraseAll,
 		addC1Player: uiElements.addC1Player,
-		addC2Player: uiElements.addC2Player
+		addC2Player: uiElements.addC2Player,
 	},
 	"c1PlayerSelect": {},
 	"playerRoll": {
@@ -40,7 +41,8 @@ const stateElementDict = {
 	"finalResults": {
 		nextCycle: uiElements.nextCycle
 	},
-	"tie-break": {}
+	"tie-break": {},
+	"freeRoll": {}
 };
 
 document.addEventListener("change-state", () => {
@@ -58,12 +60,18 @@ document.addEventListener("change-state", () => {
 class StateManager {
 	constructor() {
 		this.state = null;
+		this.savedState = null;
 	}
 
 	changeState(state) {
 		if (!Object.keys(stateElementDict).some(st => st === state)) throw new Error(`Cannot change state machine state to ${state}`);
 		this.state = state;
 		document.dispatchEvent(changeStateEv);
+	}
+
+	saveState() {
+		if (!this.state) return;
+		this.savedState = this.state;
 	}
 }
 

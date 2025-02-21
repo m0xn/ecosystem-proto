@@ -18,6 +18,8 @@ const MAXITERS = 25;
 const SPEEDBOOST = { "c1": 6, "c2": 6 };
 const SPEEDNERF = { "c1": -2, "c2": -3 };
 
+const rollAvailableStates = ["playerRoll", "tie-break", "freeRoll"];
+
 function handleSpeedMod(speedMod) {
 	playersManager.lastSelected.speed += speedMod;
 	document.dispatchEvent(playersUpdateEv);
@@ -53,7 +55,7 @@ function rollDice(dice, interval = 125) {
 				dice.rolling = false;
 				dice.value = rolledNumber;
 				dice.rolled = true;
-				dice.el.style = "opacity: 65%;";
+				dice.el.style = stateManager.state === "freeRoll" ? "" : "opacity: 65%;";
 				resolve(dice.value);
 				if (dice.el.id == "left-dice" && rightDice.rolled || dice.el.id == "right-dice" && leftDice.rolled) diceRolled = true;
 				clearInterval(rollingAnimID);
@@ -61,7 +63,7 @@ function rollDice(dice, interval = 125) {
 			dice.el.src = `sprites/dice${rolledNumber}.png`;
 			completedIters++;
 		}, interval);
-	})
+	});
 }
 
 let matchingSpeeds = [];
@@ -201,8 +203,13 @@ const leftDice = new Dice(document.querySelector("img#left-dice"));
 const rightDice = new Dice(document.querySelector("img#right-dice"));
 
 leftDice.el.addEventListener("click", async () => {
-	if (stateManager.state !== "playerRoll" && stateManager.state !== "tie-break" || leftDice.rolled || leftDice.rolling) return;
+	if (!rollAvailableStates.includes(stateManager.state) || leftDice.rolled || leftDice.rolling) return;
 	const diceRes = await rollDice(leftDice);
+	if (stateManager.state === "freeRoll") {
+		if (rightDice.rolled) resetDices();
+		return;
+	}
+
 	playersManager.lastSelected.speed += diceRes;
 	document.dispatchEvent(playersUpdateEv);
 	if (rightDice.rolled) {
@@ -212,8 +219,13 @@ leftDice.el.addEventListener("click", async () => {
 });
 
 rightDice.el.addEventListener("click", async () => {
-	if (stateManager.state !== "playerRoll" && stateManager.state !== "tie-break" || rightDice.rolled || rightDice.rolling) return;
+	if (!rollAvailableStates.includes(stateManager.state) || rightDice.rolled || rightDice.rolling) return;
 	const diceRes = await rollDice(rightDice);
+	if (stateManager.state === "freeRoll") {
+		if (leftDice.rolled) resetDices();
+		return;
+	};
+
 	playersManager.lastSelected.speed += diceRes;
 	document.dispatchEvent(playersUpdateEv);
 	if (leftDice.rolled) {
