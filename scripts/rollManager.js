@@ -69,84 +69,81 @@ function rollDice(dice, interval = 125) {
 let matchingSpeeds = [];
 
 function checkForTie() {
-	let c1Players = playersManager.playersInGame.filter(pl => pl.group === "c1" && pl.speed > 0).toSorted((prev, curr) => prev.speed - curr.speed);
-	let c2Players = playersManager.playersInGame.filter(pl => pl.group === "c2" && pl.speed > 0).toSorted((prev, curr) => prev.speed - curr.speed);
+	const c1Players = playersManager.playersInGame.filter(pl => pl.group === "c1" && pl.speed > 0 && !pl.mimesis).toSorted((prev, curr) => prev.speed - curr.speed);
+	const c2Players = playersManager.playersInGame.filter(pl => pl.group === "c2" && pl.speed > 0).toSorted((prev, curr) => prev.speed - curr.speed);
 
-	return new Promise(async (resolve, _) => {
-		for (const player of c2Players) {
-			matchingSpeeds = c2Players.filter(pl => pl.speed === player.speed);
-			if (matchingSpeeds.length > 1 && c1Players.filter(pl => pl.speed < player.speed).length < matchingSpeeds.length) {
-				const header = document.createElement("h2");
-				header.innerHTML = "¡Desempate!";
-
-				const playersPar = document.createElement("p");
-				for (let i = 0; i < matchingSpeeds.length; i++) {
-					playersPar.innerHTML += i < matchingSpeeds.length - 1
-						? `${matchingSpeeds[i].name} VS `
-						: `${matchingSpeeds[i].name}`;
-				}
-
-				tieBreakHeader.appendChild(header);
-				tieBreakHeader.appendChild(playersPar);
-				tieBreakHeader.style.opacity = "100%";
-
-				setNextTieBreakPlayer(matchingSpeeds[0]);
-
-				stateManager.changeState("tie-break");
-				if (!finishTurnBtn.disabled) finishTurnBtn.disabled = true;
-				document.dispatchEvent(playersUpdateEv);
-				resetDices();
-
-				await new Promise((resolve, _) => {
-					document.addEventListener("finish-tie", () => {
-						deselectLastPlayer();
-
-						tieBreakHeader.style.opacity = "0%";
-						while (tieBreakHeader.childNodes.length > 0) tieBreakHeader.removeChild(tieBreakHeader.firstChild);
-
-						resolve();
-					});
-				});
-
-				c2Players = c2Players.filter(pl => pl.speed !== player.speed);
-				continue;
-			}
-
-			const prey = c1Players.find(pl => pl.speed < player.speed);
-			if (prey) {
-				c1Players = c1Players.filter(pl => pl !== prey);
-				c2Players = c2Players.filter(pl => pl !== player);
-			}
-		}
-
-		resolve();
-	});
+	for (const player of c2Players) {
+		matchingSpeeds = c2Players.filter(pl => pl.speed === player.speed);
+		if (matchingSpeeds.length > 1 && matchingSpeeds.length > c1Players.filter(pl => pl.speed < player.speed).length) break;
+		matchingSpeeds = [];
+	}
 }
 
-function newHandleTieBreak() {
-	const newIdx = matchingSpeeds.indexOf(playersManager.lastSelected) + 1;
-	if (newIdx > matchingSpeeds.length - 1) {
-		if (matchingSpeeds.every(pl => pl.speed === matchingSpeeds[0].speed)) {
-			deselectLastPlayer();
+function setupTieBreakHeader() {
+	const playersPar = tieBreakHeader.childNodes.length <= 1
+		? document.createElement("p")
+		: document.querySelector("section#tie-break>p");
+	console.log(playersPar, playersPar.childNodes.length, playersPar.childNodes.length <= 1);
 
-			setNextTieBreakPlayer(matchingSpeeds[0]);
+	if (tieBreakHeader.childNodes.length <= 1) {
+		const header = document.createElement("h2");
+		header.innerHTML = "¡Desempate!";
 
-			stateManager.changeState("tie-break");
-			document.dispatchEvent(playersUpdateEv);
-			resetDices();
-			return;
-		}
+		tieBreakHeader.appendChild(header);
+		tieBreakHeader.appendChild(playersPar);
+	}
+
+	playersPar.innerHTML = "";
+	for (let i = 0; i < matchingSpeeds.length; i++)
+		playersPar.innerHTML += i < matchingSpeeds.length - 1 ? `${matchingSpeeds[i].name} VS ` : `${matchingSpeeds[i].name}`;
+
+	tieBreakHeader.style.opacity = "100%";
+}
+
+function resetTieBreakHeader() {
+	while (tieBreakHeader.childNodes.length > 0) tieBreakHeader.removeChild(tieBreakHeader.firstChild);
+	tieBreakHeader.style.opacity = "0%";
+}
+
+async function resolveTie() {
+	checkForTie();
+	if (matchingSpeeds.length === 1) {
+		deselectLastPlayer();
+		stateManager.changeState("finalResults");
+		return;
+	}
+
+	while (matchingSpeeds.length > 1) {
+		setupTieBreakHeader();
+		deselectLastPlayer();
+		setNextTieBreakPlayer(matchingSpeeds.shift());
+
+		stateManager.changeState("tie-break");
+		if (!finishTurnBtn.disabled) finishTurnBtn.disabled = true;
+		document.dispatchEvent(playersUpdateEv);
+		resetDices();
+
+		await new Promise((resolve, _) => {
+			document.addEventListener("finish-tie", () => { resolve(); });
+		});
+
+		checkForTie();
+	}
+
+	stateManager.changeState("finalResults");
+	resetTieBreakHeader();
+}
+
+function diceTieBreakHandle() {
+	if (matchingSpeeds.length === 0) {
 		document.dispatchEvent(finishTieEv);
 		return;
 	}
+
 	deselectLastPlayer();
-
-	const nextPlayer = matchingSpeeds[newIdx];
-	setNextTieBreakPlayer(nextPlayer);
+	setNextTieBreakPlayer(matchingSpeeds.shift());
 	document.dispatchEvent(playersUpdateEv);
-
 	resetDices();
-	stateManager.changeState("tie-break");
 }
 
 const buttonsText = {
@@ -214,7 +211,7 @@ leftDice.el.addEventListener("click", async () => {
 	document.dispatchEvent(playersUpdateEv);
 	if (rightDice.rolled) {
 		document.dispatchEvent(finishRollEv);
-		if (stateManager.state === "tie-break") newHandleTieBreak();
+		if (stateManager.state === "tie-break") diceTieBreakHandle();
 	}
 });
 
@@ -230,7 +227,7 @@ rightDice.el.addEventListener("click", async () => {
 	document.dispatchEvent(playersUpdateEv);
 	if (leftDice.rolled) {
 		document.dispatchEvent(finishRollEv);
-		if (stateManager.state === "tie-break") newHandleTieBreak();
+		if (stateManager.state === "tie-break") diceTieBreakHandle();
 	}
 });
 
@@ -278,8 +275,7 @@ finishRollBtn.addEventListener("click", async () => {
 		} else {
 			playersManager.lastSelected.selected = false;
 			document.dispatchEvent(playersUpdateEv);
-			await checkForTie();
-			stateManager.changeState("finalResults");
+			resolveTie();
 		}
 	}
 	resetDices();
@@ -291,8 +287,7 @@ finishTurnBtn.addEventListener("click", async () => {
 	else {
 		playersManager.lastSelected.selected = false;
 		document.dispatchEvent(playersUpdateEv);
-		await checkForTie();
-		stateManager.changeState("finalResults");
+		resolveTie();
 	}
 	resetDices();
 });
