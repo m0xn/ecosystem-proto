@@ -34,6 +34,8 @@ freeRollBtn.addEventListener("click", () => {
 document.addEventListener("keydown", e => {
 	if (stateManager.state === "debug" && e.key === "Escape") {
 		stateManager.changeState(stateManager.savedState);
+		finishTurnBtn.disabled = stateManager.savedFinishTurnState;
+		document.body.style.cursor = "";
 		if (playersManager.lastSelected) {
 			playersManager.lastSelected.selected = false;
 			document.dispatchEvent(playersUpdateEv);
@@ -42,8 +44,9 @@ document.addEventListener("keydown", e => {
 
 	if (e.shiftKey && e.key === "D" && stateManager.state !== "debug") {
 		stateManager.saveState();
+		finishTurnBtn.disabled = true;
 		stateManager.changeState("debug");
-		console.log(stateManager);
+		document.body.style.cursor = "cell";
 	}
 });
 
