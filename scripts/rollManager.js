@@ -109,6 +109,7 @@ async function resolveTie() {
 	checkForTie();
 	if (matchingSpeeds.length === 1) {
 		deselectLastPlayer();
+		finishTurnBtn.disabled = true;
 		stateManager.changeState("finalResults");
 		return;
 	}
