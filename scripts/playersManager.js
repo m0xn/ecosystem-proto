@@ -19,6 +19,7 @@ const uiElements = {
 const removeC1PlayersBtn = document.querySelector("button#erase-c1");
 const removeC2PlayersBtn = document.querySelector("button#erase-c2");
 const removeAllPlayersBtn = document.querySelector("button#erase-all");
+const cancelSelectionBtn = document.querySelector("button#cancel-selection");
 
 function handleUIPlayerAdd(group) {
 	const nameField = uiElements[group].nameField;
@@ -106,6 +107,18 @@ class PlayersManager {
 	}
 
 	handlePlayerSelection(player) {
+		if (stateManager.state === "debug") {
+			if (this.lastSelected) {
+				this.lastSelected.selected = false;
+				document.dispatchEvent(playersUpdateEv);
+			}
+
+			player.selected = !player.selected;
+			this.lastSelected = player;
+			document.dispatchEvent(playersUpdateEv);
+			return;
+		}
+
 		if (!stateManager.state.includes("PlayerSelect") || stateManager.state.slice(0, 2) !== player.group) return;
 		if (this.playersInGame.some(pl => pl === player)) {
 			window.alert("Este jugador ya ha tirado en este turno");
@@ -180,6 +193,14 @@ uiElements.c1.addPlayerBtn.addEventListener("click", () => { handleUIPlayerAdd("
 uiElements.c2.addPlayerBtn.addEventListener("click", () => { handleUIPlayerAdd("c2"); });
 
 window.addEventListener("keydown", e => {
+	if (stateManager.state === "debug" && playersManager.lastSelected) {
+		switch (e.key) {
+			case "ArrowUp": playersManager.lastSelected.speed++; break;
+			case "ArrowDown": playersManager.lastSelected.speed--; break;
+			default: return;
+		}
+		document.dispatchEvent(playersUpdateEv);
+	}
 	if (e.key !== "Enter" || stateManager.state !== "preCycle") return;
 	if (document.activeElement == uiElements.c1.nameField) handleUIPlayerAdd("c1");
 	if (document.activeElement == uiElements.c2.nameField) handleUIPlayerAdd("c2");
@@ -188,3 +209,11 @@ window.addEventListener("keydown", e => {
 removeC1PlayersBtn.addEventListener("click", () => { handleGroupRemoval("c1", "¿Estás seguro de que quieres eliminar a los jugadores de C1?"); });
 removeC2PlayersBtn.addEventListener("click", () => { handleGroupRemoval("c2", "¿Estás seguro de que quieres eliminar a los jugadores de C2?"); });
 removeAllPlayersBtn.addEventListener("click", () => { handleGroupRemoval("all", "¿Estás seguro de que quieres elminar a todos los jugdadores?"); });
+
+cancelSelectionBtn.addEventListener("click", () => {
+	playersManager.lastSelected.selected = false;
+	if (playersManager.lastSelected.exotic) playersManager.lastSelected.speed = 0;
+	document.dispatchEvent(playersUpdateEv);
+	playersManager.playersInGame.pop();
+	stateManager.changeState(`${playersManager.lastSelected.group}PlayerSelect`);
+});
