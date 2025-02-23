@@ -6,6 +6,11 @@ else
 	DESKTOP_DIR=$HOME/Escritorio
 fi
 
+if [[ -e $DESKTOP_DIR/sim-app.desktop ]]; then
+	echo "You have already installed the application in your desktop directory"
+	exit
+fi
+
 if [[ ! -e ~/.icons ]]; then
 	echo "Creating ~/.icons folder..."
 fi
