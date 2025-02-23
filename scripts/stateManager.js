@@ -62,6 +62,7 @@ class StateManager {
 	constructor() {
 		this.state = null;
 		this.savedState = null;
+		this.savedFinishTurnState = false;
 	}
 
 	changeState(state) {
@@ -71,8 +72,8 @@ class StateManager {
 	}
 
 	saveState() {
-		if (!this.state) return;
 		this.savedState = this.state;
+		this.savedFinishTurnState = uiElements.finishTurn.disabled
 	}
 }
 

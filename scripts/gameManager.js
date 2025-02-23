@@ -1,8 +1,12 @@
 import { stateManager } from "./stateManager.js";
 import { playersManager, playersUpdateEv } from "./playersManager.js";
+import { resetDices } from "./rollManager.js";
 
 const startCycleBtn = document.querySelector("button#start-cycle");
 const freeRollBtn = document.querySelector("button#free-roll");
+const finishTurnBtn = document.querySelector("button#finish-turn");
+
+export const freeRollAvailableStates = ["preCycle", "c1PlayerSelect", "c2PlayerSelect", "freeRoll"];
 
 startCycleBtn.addEventListener("click", () => {
 	if (playersManager.players.filter(pl => pl.group === "c1").length < 1 || playersManager.players.filter(pl => pl.group === "c2").length < 1) {
@@ -13,13 +17,16 @@ startCycleBtn.addEventListener("click", () => {
 });
 
 freeRollBtn.addEventListener("click", () => {
+	resetDices();
 	if (stateManager.state === "freeRoll") {
 		stateManager.changeState(stateManager.savedState);
+		finishTurnBtn.disabled = stateManager.savedFinishTurnState;
 		freeRollBtn.innerHTML = "Tirada libre";
 		return;
 	}
 
 	stateManager.saveState();
+	finishTurnBtn.disabled = true;
 	stateManager.changeState("freeRoll");
 	freeRollBtn.innerHTML = "Restaurar estado";
 });

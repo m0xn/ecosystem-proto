@@ -1,5 +1,6 @@
 import { playersManager, playersUpdateEv, disablePlayerEntry, nameToId } from "./playersManager.js";
 import { stateManager } from "./stateManager.js";
+import { freeRollAvailableStates } from "./gameManager.js";
 
 export let diceRolled = false;
 
@@ -42,8 +43,7 @@ const setNextTieBreakPlayer = player => {
 const clamp = (val, min, max = null) => val < min ? min : val > max && max ? max : val;
 
 function rollDice(dice, interval = 125) {
-	cancelSelectionBtn.disabled = true;
-	finishTurnBtn.disabled = true;
+	cancelSelectionBtn.disabled = finishTurnBtn.disabled = freeRollBtn.disabled = true;
 	const iters = clamp(MAXITERS - playersManager.playersInGame.length * 2, MINITERS);
 	let completedIters = 0;
 	dice.rolling = true;
@@ -69,13 +69,13 @@ function rollDice(dice, interval = 125) {
 let matchingSpeeds = [];
 
 function checkForTie() {
+	matchingSpeeds = [];
 	const c1Players = playersManager.playersInGame.filter(pl => pl.group === "c1" && pl.speed > 0 && !pl.mimesis).toSorted((prev, curr) => prev.speed - curr.speed);
 	const c2Players = playersManager.playersInGame.filter(pl => pl.group === "c2" && pl.speed > 0).toSorted((prev, curr) => prev.speed - curr.speed);
 
 	for (const player of c2Players) {
 		matchingSpeeds = c2Players.filter(pl => pl.speed === player.speed);
 		if (matchingSpeeds.length > 1 && matchingSpeeds.length > c1Players.filter(pl => pl.speed < player.speed).length) break;
-		matchingSpeeds = [];
 	}
 }
 
@@ -165,8 +165,9 @@ const finishRollEv = new Event("finish-roll");
 const finishTieEv = new Event("finish-tie");
 document.addEventListener("finish-roll", () => {
 	if (stateManager.state === "tie-break") return;
-	finishRollBtn.disabled = false;
-	finishTurnBtn.disabled = false;
+	finishRollBtn.disabled = finishTurnBtn.disabled = stateManager.state === "freeRoll";
+	freeRollBtn.disabled = !freeRollAvailableStates.includes(stateManager.state);
+	if (stateManager.state === "freeRoll") return;
 	playersManager.lastSelected.speed = clamp(playersManager.lastSelected.speed, 0);
 	playersManager.lastSelected.selected = false;
 	disablePlayerEntry(document.querySelector(`li#${nameToId(playersManager.lastSelected.name)}`));
@@ -181,6 +182,7 @@ const mimesisBtn = document.querySelector("button#mimesis");
 const tieBreakHeader = document.querySelector("section#tie-break");
 
 document.addEventListener("change-state", () => {
+	freeRollBtn.disabled = !freeRollAvailableStates.includes(stateManager.state);
 	if (stateManager.state !== "playerRoll") return;
 	if (playersManager.lastSelected.exotic || playersManager.lastSelected.group === "c2") exoticSpecieBtn.disabled = true;
 	const group = playersManager.lastSelected.group;
@@ -195,6 +197,7 @@ const finishTurnBtn = document.querySelector("button#finish-turn");
 finishTurnBtn.disabled = true; // Prevent the button from being enabled on load
 const cancelSelectionBtn = document.querySelector("button#cancel-selection");
 const exoticSpecieBtn = document.querySelector("button#exotic-specie");
+const freeRollBtn = document.querySelector("button#free-roll");
 
 const leftDice = new Dice(document.querySelector("img#left-dice"));
 const rightDice = new Dice(document.querySelector("img#right-dice"));
@@ -203,7 +206,10 @@ leftDice.el.addEventListener("click", async () => {
 	if (!rollAvailableStates.includes(stateManager.state) || leftDice.rolled || leftDice.rolling) return;
 	const diceRes = await rollDice(leftDice);
 	if (stateManager.state === "freeRoll") {
-		if (rightDice.rolled) resetDices();
+		if (rightDice.rolled) {
+			resetDices();
+			document.dispatchEvent(finishRollEv);
+		}
 		return;
 	}
 
@@ -219,9 +225,12 @@ rightDice.el.addEventListener("click", async () => {
 	if (!rollAvailableStates.includes(stateManager.state) || rightDice.rolled || rightDice.rolling) return;
 	const diceRes = await rollDice(rightDice);
 	if (stateManager.state === "freeRoll") {
-		if (leftDice.rolled) resetDices();
+		if (leftDice.rolled) {
+			resetDices();
+			document.dispatchEvent(finishRollEv);
+		}
 		return;
-	};
+	}
 
 	playersManager.lastSelected.speed += diceRes;
 	document.dispatchEvent(playersUpdateEv);
@@ -292,9 +301,3 @@ finishTurnBtn.addEventListener("click", async () => {
 	resetDices();
 });
 
-cancelSelectionBtn.addEventListener("click", () => {
-	playersManager.lastSelected.selected = false;
-	document.dispatchEvent(playersUpdateEv);
-	playersManager.playersInGame.pop();
-	stateManager.changeState(`${playersManager.lastSelected.group}PlayerSelect`);
-});
