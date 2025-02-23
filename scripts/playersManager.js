@@ -19,6 +19,7 @@ const uiElements = {
 const removeC1PlayersBtn = document.querySelector("button#erase-c1");
 const removeC2PlayersBtn = document.querySelector("button#erase-c2");
 const removeAllPlayersBtn = document.querySelector("button#erase-all");
+const cancelSelectionBtn = document.querySelector("button#cancel-selection");
 
 function handleUIPlayerAdd(group) {
 	const nameField = uiElements[group].nameField;
@@ -208,3 +209,11 @@ window.addEventListener("keydown", e => {
 removeC1PlayersBtn.addEventListener("click", () => { handleGroupRemoval("c1", "¿Estás seguro de que quieres eliminar a los jugadores de C1?"); });
 removeC2PlayersBtn.addEventListener("click", () => { handleGroupRemoval("c2", "¿Estás seguro de que quieres eliminar a los jugadores de C2?"); });
 removeAllPlayersBtn.addEventListener("click", () => { handleGroupRemoval("all", "¿Estás seguro de que quieres elminar a todos los jugdadores?"); });
+
+cancelSelectionBtn.addEventListener("click", () => {
+	playersManager.lastSelected.selected = false;
+	if (playersManager.lastSelected.exotic) playersManager.lastSelected.speed = 0;
+	document.dispatchEvent(playersUpdateEv);
+	playersManager.playersInGame.pop();
+	stateManager.changeState(`${playersManager.lastSelected.group}PlayerSelect`);
+});
