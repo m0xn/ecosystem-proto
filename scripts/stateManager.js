@@ -1,3 +1,5 @@
+import { playersManager } from "./playersManager.js";
+
 const changeStateEv = new Event("change-state");
 const uiElements = {
 	startCycle: document.querySelector("button#start-cycle"),
@@ -62,7 +64,11 @@ class StateManager {
 	constructor() {
 		this.state = null;
 		this.savedState = null;
-		this.savedFinishTurnState = false;
+		this.savedStateInfo = {
+			turnBtnDisabled: false,
+			prevSelectedPlayer: null
+		};
+		this.selectedInDebug = false;
 	}
 
 	changeState(state) {
@@ -73,7 +79,8 @@ class StateManager {
 
 	saveState() {
 		this.savedState = this.state;
-		this.savedFinishTurnState = uiElements.finishTurn.disabled
+		this.savedStateInfo.turnBtnDisabled = uiElements.finishTurn.disabled
+		this.savedStateInfo.prevSelectedPlayer = playersManager.lastSelected;
 	}
 }
 

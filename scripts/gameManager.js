@@ -6,7 +6,9 @@ const startCycleBtn = document.querySelector("button#start-cycle");
 const freeRollBtn = document.querySelector("button#free-roll");
 const finishTurnBtn = document.querySelector("button#finish-turn");
 
-export const freeRollAvailableStates = ["preCycle", "c1PlayerSelect", "c2PlayerSelect", "freeRoll"];
+export const freeRollAllowedStates = ["preCycle", "c1PlayerSelect", "c2PlayerSelect", "freeRoll"];
+const debugModeAllowedStates = ["preCycle", "c1PlayerSelect", "c2PlayerSelect", "debug"];
+
 
 startCycleBtn.addEventListener("click", () => {
 	if (playersManager.players.filter(pl => pl.group === "c1").length < 1 || playersManager.players.filter(pl => pl.group === "c2").length < 1) {
@@ -18,39 +20,38 @@ startCycleBtn.addEventListener("click", () => {
 
 freeRollBtn.addEventListener("click", () => {
 	resetDices();
-	if (stateManager.state === "freeRoll") {
-		stateManager.changeState(stateManager.savedState);
-		finishTurnBtn.disabled = stateManager.savedFinishTurnState;
-		freeRollBtn.innerHTML = "Tirada libre";
-		return;
-	}
+	const freeRollMode = stateManager.state === "freeRoll"
+	if (!freeRollMode) stateManager.saveState();
 
-	stateManager.saveState();
-	finishTurnBtn.disabled = true;
-	stateManager.changeState("freeRoll");
-	freeRollBtn.innerHTML = "Restaurar estado";
+	stateManager.changeState(freeRollMode ? stateManager.savedState : "freeRoll");
+	finishTurnBtn.disabled = freeRollMode ? stateManager.savedStateInfo.turnBtnDisabled : true;
+	freeRollBtn.innerHTML = freeRollMode ? "Tirada libre" : "Restaurar estado";
 });
 
 document.addEventListener("keydown", e => {
-	if (stateManager.state === "debug" && e.key === "Escape") {
-		stateManager.changeState(stateManager.savedState);
-		finishTurnBtn.disabled = stateManager.savedFinishTurnState;
-		document.body.style.cursor = "";
-		if (playersManager.lastSelected) {
-			playersManager.lastSelected.selected = false;
-			document.dispatchEvent(playersUpdateEv);
-		}
-	}
+	if (!debugModeAllowedStates.includes(stateManager.state)) return;
 
-	if (e.shiftKey && e.key === "D" && stateManager.state !== "debug") {
-		stateManager.saveState();
-		finishTurnBtn.disabled = true;
-		stateManager.changeState("debug");
-		document.body.style.cursor = "cell";
+	if (e.shiftKey && e.key === "D") {
+		const debugMode = stateManager.state === "debug";
+		if (!debugMode) stateManager.saveState();
+
+		stateManager.changeState(debugMode ? stateManager.savedState : "debug");
+		finishTurnBtn.disabled = debugMode ? stateManager.savedStateInfo.turnBtnDisabled : true;
+		document.body.style.cursor = debugMode ? "" : "cell";
+
+		if (debugMode
+			&& playersManager.lastSelected === stateManager.savedStateInfo.prevSelectedPlayer
+			&& !playersManager.playersInGame.includes(playersManager.lastSelected)
+			&& stateManager.savedState.includes("PlayerSelect")
+			|| !playersManager.lastSelected
+		) return;
+
+		playersManager.lastSelected.selected = false;
+		document.dispatchEvent(playersUpdateEv);
 	}
 });
 
 document.addEventListener("players-update", () => {
-	if (!stateManager.state.includes("PlayerSelect")) return;
+	if (!stateManager.state.includes("PlayerSelect") || stateManager.selectedInDebug) return;
 	stateManager.changeState("playerRoll");
 });

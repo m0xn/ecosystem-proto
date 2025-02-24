@@ -108,6 +108,7 @@ class PlayersManager {
 
 	handlePlayerSelection(player) {
 		if (stateManager.state === "debug") {
+			stateManager.selectedInDebug = true;
 			if (this.lastSelected) {
 				this.lastSelected.selected = false;
 				document.dispatchEvent(playersUpdateEv);
@@ -119,6 +120,7 @@ class PlayersManager {
 			return;
 		}
 
+		stateManager.selectedInDebug = false;
 		if (!stateManager.state.includes("PlayerSelect") || stateManager.state.slice(0, 2) !== player.group) return;
 		if (this.playersInGame.some(pl => pl === player)) {
 			window.alert("Este jugador ya ha tirado en este turno");

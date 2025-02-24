@@ -1,6 +1,6 @@
 import { playersManager, playersUpdateEv, disablePlayerEntry, nameToId } from "./playersManager.js";
 import { stateManager } from "./stateManager.js";
-import { freeRollAvailableStates } from "./gameManager.js";
+import { freeRollAllowedStates } from "./gameManager.js";
 
 export let diceRolled = false;
 
@@ -166,7 +166,7 @@ const finishTieEv = new Event("finish-tie");
 document.addEventListener("finish-roll", () => {
 	if (stateManager.state === "tie-break") return;
 	finishRollBtn.disabled = finishTurnBtn.disabled = stateManager.state === "freeRoll";
-	freeRollBtn.disabled = !freeRollAvailableStates.includes(stateManager.state);
+	freeRollBtn.disabled = !freeRollAllowedStates.includes(stateManager.state);
 	if (stateManager.state === "freeRoll") return;
 	playersManager.lastSelected.speed = clamp(playersManager.lastSelected.speed, 0);
 	playersManager.lastSelected.selected = false;
@@ -182,7 +182,7 @@ const mimesisBtn = document.querySelector("button#mimesis");
 const tieBreakHeader = document.querySelector("section#tie-break");
 
 document.addEventListener("change-state", () => {
-	freeRollBtn.disabled = !freeRollAvailableStates.includes(stateManager.state);
+	freeRollBtn.disabled = !freeRollAllowedStates.includes(stateManager.state);
 	if (stateManager.state !== "playerRoll") return;
 	if (playersManager.lastSelected.exotic || playersManager.lastSelected.group === "c2") exoticSpecieBtn.disabled = true;
 	const group = playersManager.lastSelected.group;
