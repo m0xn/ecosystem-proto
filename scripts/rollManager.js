@@ -69,13 +69,13 @@ function rollDice(dice, interval = 125) {
 let matchingSpeeds = [];
 
 function checkForTie() {
-	matchingSpeeds = [];
 	const c1Players = playersManager.playersInGame.filter(pl => pl.group === "c1" && pl.speed > 0 && !pl.mimesis).toSorted((prev, curr) => prev.speed - curr.speed);
 	const c2Players = playersManager.playersInGame.filter(pl => pl.group === "c2" && pl.speed > 0).toSorted((prev, curr) => prev.speed - curr.speed);
 
 	for (const player of c2Players) {
 		matchingSpeeds = c2Players.filter(pl => pl.speed === player.speed);
 		if (matchingSpeeds.length > 1 && matchingSpeeds.length > c1Players.filter(pl => pl.speed < player.speed).length) break;
+		if (c2Players.indexOf(player) === c2Players.length - 1) matchingSpeeds = [];
 	}
 }
 
@@ -83,7 +83,6 @@ function setupTieBreakHeader() {
 	const playersPar = tieBreakHeader.childNodes.length <= 1
 		? document.createElement("p")
 		: document.querySelector("section#tie-break>p");
-	console.log(playersPar, playersPar.childNodes.length, playersPar.childNodes.length <= 1);
 
 	if (tieBreakHeader.childNodes.length <= 1) {
 		const header = document.createElement("h2");
