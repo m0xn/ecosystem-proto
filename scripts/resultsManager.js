@@ -33,7 +33,9 @@ document.addEventListener("change-state", async () => {
 		c1Players = c1Players.filter(pl => pl !== prey);
 	}
 
-	c1Players.forEach(pl => { savedList.appendChild(playersManager.createPlayerEntry(pl)); });
+	c1Players
+		.reverse()
+		.forEach(pl => { savedList.appendChild(playersManager.createPlayerEntry(pl)); });
 	hungry.forEach(pl => { hungerList.appendChild(playersManager.createPlayerEntry(pl)); });
 	playersManager.playersInGame.filter(pl => pl.mimesis).forEach(pl => { hiddenList.appendChild(playersManager.createPlayerEntry(pl)); });
 });
